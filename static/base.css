@@ -1,0 +1,97 @@
+/* Загальні стилі */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 120vh;
+}
+
+/* Header */
+header {
+    background-color: rgb(66, 71, 103);
+    color: #fff;
+    text-align: center;
+    
+}
+.site-title{
+    color: black;
+}
+
+.header-title {
+    background-color: rgba(255, 255, 255, 0.877); /* Напівпрозорий фон */
+    padding: 8px;
+    font-size: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10; 
+    
+    border-bottom: 2px solid #f2f1f1; /* Непрозора лінія між секторами */
+}
+
+.header-links {
+    background-color: rgb(117, 135, 171) ;/* Колір фону для секції з посиланнями */
+    padding: 8px 0;
+    display: flex;
+    align-items: center; /* Вирівнювання елементів по центру по вертикалі */
+}
+
+.header-links nav {
+    display: flex;
+    gap: 20px; /* Відстань між посиланнями */
+    justify-content: center;
+    margin-left: 250px; /* Відступ для майбутнього aside */
+}
+
+.header-links nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px;
+}
+
+.header-links nav a:hover {
+    color: #ddd;
+}
+
+/* Login link розташовується в кінці секції */
+.login-link {
+    color: #fff;
+    text-decoration: none;
+    padding-right: 10px;
+    margin-right: 10px;
+    margin-left: auto; /* Дозволяє login-link розміщуватись справа */
+}
+
+
+
+/* Main Content */
+main {
+    flex: 1;
+    display: flex;
+    background-color: #fff;
+    margin: 0; 
+}
+
+
+
+.main-content {
+    flex: 1;
+
+}
+
+
+
+/* Footer */
+footer {
+    background-color: rgb(117, 135, 171);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}

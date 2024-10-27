@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'test.css' %}">
+<div class="conteiner">
+        <aside class="sidebar" style="margin: 0;">
+        <div class="sidebar-div">
+            <nav class="sidebar-nav">
+                <a href="">Галерея</a>
+                <a href="">Події</a>
+                <a href="">Опитування</a>
+            </nav>
+         </div>
+        </aside>
+        <div>
+        <h2>Welcome to the Portal</h2>
+        </div>
+</div>       
+{% endblock %}

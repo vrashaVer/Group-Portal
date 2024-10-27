@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <title>{% block title %}Group Portal{% endblock %}</title>
+
+</head>
+<body>
+    <div class="wrapper">
+    <header>
+        
+            <div class="header-title">
+                <h1 class="site-title">Group Portal of Logika School</h1>
+            </div>
+            <div class="header-links">
+                <nav >
+                    <a href="">Головна</a>
+                    <a href="">Форум</a>
+                    <a href="">Учасники</a>
+                </nav>
+              
+                <a href="" class="login-link">Login</a>
+               
+            </div>   
+    </header>
+
+    <main >
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Group Portal of Logika School. All rights reserved.</p>
+    </footer>
+
+
+</div>
+</body> 
+</html>
+
+
