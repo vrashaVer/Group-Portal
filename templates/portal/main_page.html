@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load video_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="">Галерея</a>
+            <a href="">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+</aside>
+<div class="list-elements">
+    {% for item in items %}
+        {% if item.title %}
+            <div class="announcement">
+                <h2>{{ item.title }}</h2>
+                <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
+                <p>{{ item.content }}</p>
+
+                {% if item.video_file %}
+                    <video width="320" height="240" controls>
+                        <source src="{{ item.video_file.url }}" type="video/mp4">
+                    </video>
+                {% elif item.video_url %}
+                    {% if 'youtube.com' in item.video_url or 'youtu.be' in item.video_url %}
+                        {% with item.video_url|extract_video_id as video_id %}
+                            {% if video_id %}
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" 
+                                        frameborder="0" allowfullscreen></iframe>
+                            {% else %}
+                                <p>Invalid YouTube URL</p>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endif %}
+                {% for image in item.images.all %}
+                    <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                {% endfor %}
+
+                <button class="like-button" data-announcement-id="{{ item.id }}">
+                    {% if item.id in liked_announcements %} Unlike {% else %} Like {% endif %}
+                </button>
+            </div>
+        {% elif item.question %}
+        <div class="poll">
+            <h2>{{ item.question }}</h2>
+            {% if item.id in user_voted_polls %}
+                <p>You have already voted. Here are the results:</p>
+                {% for choice in item.choices.all %}
+                    <p>{{ choice.choice_text }}: {{ choice.votes.count }} votes</p>
+                {% endfor %}
+            {% else %}
+            <form method="POST" action="" class="vote-form" data-poll-id="{{ item.id }}">
+                {% csrf_token %}
+                {% for choice in item.choices.all %}
+                    <div>
+                        <input type="radio" name="choice_id" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                        <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                    </div>
+                {% endfor %}
+                <button type="submit">Vote</button>
+            </form>
+            
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+></script>
+
+<script>
+    $(document).ready(function() {
+        // Відновлення позиції прокрутки
+        if (localStorage.getItem("scrollPosition")) {
+            $(window).scrollTop(localStorage.getItem("scrollPosition"));
+        }
+
+        // Збереження позиції прокрутки перед перезавантаженням сторінки
+        window.onbeforeunload = function() {
+            localStorage.setItem("scrollPosition", $(window).scrollTop());
+        };
+        // Обробка лайків
+        $('.like-button').click(function(event) {
+            event.preventDefault(); // Запобігання переходу за посиланням
+            
+            let button = $(this);
+            let announcementId = button.data('announcement-id'); // Отримання ID оголошення
+            
+            $.ajax({
+                url: '',  // Використовуйте URL, куди відправляється POST запит
+                type: 'POST',
+                data: {
+                    announcement_id: announcementId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF-токен для захисту
+                },
+                success: function(response) {
+                    if (response.success) {
+                        button.text(response.liked ? 'Unlike' : 'Like'); // Оновлення тексту кнопки
+                    } else {
+                        alert(response.error || "An error occurred while processing your like request."); // Повідомлення про помилку
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error); // Логування помилки в консолі
+                    alert("An error occurred while processing your like request."); // Повідомлення про помилку
+                }
+            });
+        });
+
+        // Обробка голосування
+        $('.vote-form').submit(function(event) {
+            event.preventDefault();
+            let form = $(this);
+            let pollId = form.data('poll-id');
+            let choiceId = form.find('input[name="choice_id"]:checked').val();
+
+            if (!choiceId) {
+                alert("Please select an option before voting.");
+                return;
+            }
+
+            $.ajax({
+                url: '',  // Використовуємо поточний URL, обробка на сервері
+                type: 'POST',
+                data: {
+                    poll_id: pollId,
+                    choice_id: choiceId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        form.html('<p>You have already voted. Here are the results:</p>');
+                        response.results.forEach(result => {
+                            form.append(`<p>${result.choice_text}: ${result.votes_count} votes</p>`);
+                        });
+                    } else {
+                        alert(response.error || "An error occurred while processing your vote request.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error);
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        alert(xhr.responseJSON.error);
+                    } else {
+                        alert("An error occurred while processing your vote request.");
+                    }
+                }
+            });
+        });
+    });
+    
+</script>
+{% endblock %}
