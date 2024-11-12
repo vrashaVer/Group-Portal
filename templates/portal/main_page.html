@@ -10,70 +10,117 @@
 <aside class="sidebar" style="margin: 0;">
     <div class="sidebar-div">
         <nav class="sidebar-nav">
-            <a href="">Галерея</a>
+            <a href="{% url 'gallery'%}">Галерея</a>
             <a href="">Події</a>
             <a href="">Опитування</a>
         </nav>
     </div>
+
+    
 </aside>
-<div class="list-elements">
-    {% for item in items %}
-        {% if item.title %}
-            <div class="announcement">
-                <h2>{{ item.title }}</h2>
-                <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
-                <p>{{ item.content }}</p>
+<div class="main-container">
+    <div class="search-container">
+        <form id="search-form" method="get" action="{% url 'main' %}">
+            <input type="text" name="search" id="search-input" placeholder="Пошук опитувань та оголошень..." class="search-bar" value="{{ search }}" oninput="submitSearch()">
+        </form>
 
-                {% if item.video_file %}
-                    <video width="320" height="240" controls>
-                        <source src="{{ item.video_file.url }}" type="video/mp4">
-                    </video>
-                {% elif item.video_url %}
-                    {% if 'youtube.com' in item.video_url or 'youtu.be' in item.video_url %}
-                        {% with item.video_url|extract_video_id as video_id %}
-                            {% if video_id %}
-                                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" 
-                                        frameborder="0" allowfullscreen></iframe>
-                            {% else %}
-                                <p>Invalid YouTube URL</p>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
-                {% endif %}
-                {% for image in item.images.all %}
-                    <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
-                {% endfor %}
-
-                <button class="like-button" data-announcement-id="{{ item.id }}">
-                    {% if item.id in liked_announcements %} Unlike {% else %} Like {% endif %}
-                </button>
+        <div class="post-menu">
+            <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+            <div class="dropdown-menu">
+                <a href="{% url 'add_announcement'%}">Додати оголошення</a>
+                <a href="">Додати голосування</a>
             </div>
-        {% elif item.question %}
-        <div class="poll">
-            <h2>{{ item.question }}</h2>
-            {% if item.id in user_voted_polls %}
-                <p>You have already voted. Here are the results:</p>
-                {% for choice in item.choices.all %}
-                    <p>{{ choice.choice_text }}: {{ choice.votes.count }} votes</p>
-                {% endfor %}
-            {% else %}
-            <form method="POST" action="" class="vote-form" data-poll-id="{{ item.id }}">
-                {% csrf_token %}
-                {% for choice in item.choices.all %}
-                    <div>
-                        <input type="radio" name="choice_id" value="{{ choice.id }}" id="choice_{{ choice.id }}">
-                        <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
-                    </div>
-                {% endfor %}
-                <button type="submit">Vote</button>
-            </form>
-            
-            {% endif %}
         </div>
-        {% endif %}
-    {% endfor %}
+    </div>
+    <div class="list-elements">
+        {% for item in items %}
+            {% if item.title %}
+                <div class="announcement">
+                    <h2>{{ item.title }}</h2>
+                    <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
+                    <p>{{ item.content }}</p>
+
+                    {% if item.video_file %}
+                        <video width="320" height="240" controls>
+                            <source src="{{ item.video_file.url }}" type="video/mp4">
+                        </video>
+                    {% elif item.video_url %}
+                        {% if 'youtube.com' in item.video_url or 'youtu.be' in item.video_url %}
+                            {% with item.video_url|extract_video_id as video_id %}
+                                {% if video_id %}
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" 
+                                            frameborder="0" allowfullscreen></iframe>
+                                {% else %}
+                                    <p>Invalid YouTube URL</p>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    {% endif %}
+                    {% for image in item.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                    {% endfor %}
+
+                    
+                    <p class="like-count" data-announcement-id="{{ item.id }}">
+                        Likes: {{ like_counts|get_item:item.id }}
+                    </p>
+                    <button class="like-button" data-announcement-id="{{ item.id }}">
+                        {% if item.id in liked_announcements %} Unlike {% else %} Like {% endif %}
+                    </button>
+                
+                    <button class="toggle-comments-button" data-announcement-id="{{ item.id }}">Показати коментарі</button>
+                
+                    <!-- Секція коментарів -->
+                    <div id="comments-{{ item.id }}" class="comments-section" style="display: none;">
+                        <div class="existing-comments">
+                            {% with comments=comments_by_announcement|get_item:item.id %}
+                                {% if comments %}
+                                    {% for comment in comments %}
+                                        <p><strong>{{ comment.user.username }}</strong> ({{ comment.created_at }}): {{ comment.text }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>Немає коментарів</p>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        
+                        <!-- Форма для додавання коментаря -->
+                        <form method="POST" action="{% url 'add_comment' %}" class="comment-form" data-announcement-id="{{ item.id }}">
+                            {% csrf_token %}
+                            <textarea name="text" placeholder="Ваш коментар"></textarea>
+                            <button type="submit">Додати коментар</button>
+                        </form>
+                    </div>
+                </div>
+            {% elif item.question and item.choices.count > 1 %}
+            <div class="poll">
+                <h2>{{ item.question }}</h2>
+                {% if item.id in user_voted_polls %}
+                    <p>You have already voted. Here are the results:</p>
+                    {% for choice in item.choices.all %}
+                        <p>{{ choice.choice_text }}: {{ choice.votes.count }} votes</p>
+                    {% endfor %}
+                    <p>Total votes: {{ poll_data.total_votes }}</p>
+                {% else %}
+
+                <form method="POST" action="" class="vote-form" data-poll-id="{{ item.id }}">
+                    {% csrf_token %}
+                    {% for choice in item.choices.all %}
+                        <div>
+                            <input type="radio" name="choice_id" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                            <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                        </div>
+                    {% endfor %}
+                    <button type="submit">Vote</button>
+                </form>
+                
+                {% endif %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 </div>
-></script>
+
 
 <script>
     $(document).ready(function() {
@@ -87,29 +134,32 @@
             localStorage.setItem("scrollPosition", $(window).scrollTop());
         };
         // Обробка лайків
-        $('.like-button').click(function(event) {
-            event.preventDefault(); // Запобігання переходу за посиланням
-            
-            let button = $(this);
-            let announcementId = button.data('announcement-id'); // Отримання ID оголошення
-            
+        $(".like-button").click(function() {
+            var button = $(this);
+            var announcementId = button.data('announcement-id');
+            var action = button.text().trim() === 'Like' ? 'like' : 'unlike';
+
             $.ajax({
-                url: '',  // Використовуйте URL, куди відправляється POST запит
-                type: 'POST',
+                url: "{% url 'main' %}",
+                type: "POST",
                 data: {
-                    announcement_id: announcementId,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF-токен для захисту
+                    'announcement_id': announcementId,
+                    'action': action,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function(response) {
                     if (response.success) {
-                        button.text(response.liked ? 'Unlike' : 'Like'); // Оновлення тексту кнопки
+                        // Оновлюємо текст кнопки
+                        button.text(response.liked ? 'Unlike' : 'Like');
+
+                        // Оновлюємо кількість лайків
+                        $('.like-count[data-announcement-id="' + response.announcement_id + '"]').text('Likes: ' + response.like_count); // використовуємо нову кількість лайків
                     } else {
-                        alert(response.error || "An error occurred while processing your like request."); // Повідомлення про помилку
+                        console.error("Error:", response.error);
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.log("Error:", error); // Логування помилки в консолі
-                    alert("An error occurred while processing your like request."); // Повідомлення про помилку
+                    console.error("AJAX error: " + status + ": " + error);
                 }
             });
         });
@@ -136,10 +186,18 @@
                 },
                 success: function(response) {
                     if (response.success) {
+                        // If the user has already voted
                         form.html('<p>You have already voted. Here are the results:</p>');
+
+                        // Update the vote results
                         response.results.forEach(result => {
                             form.append(`<p>${result.choice_text}: ${result.votes_count} votes</p>`);
                         });
+
+                        // Show the total number of votes
+                        form.append(`<p>Total votes: ${response.total_votes}</p>`);  // Display the total number of votes
+
+                    
                     } else {
                         alert(response.error || "An error occurred while processing your vote request.");
                     }
@@ -154,7 +212,112 @@
                 }
             });
         });
+        function toggleComments(announcementId) {
+            const commentSection = $(`#comments-${announcementId}`);
+            
+            if (commentSection.is(':visible')) {
+                commentSection.hide();
+            } else {
+                // Якщо коментарі не завантажені, завантажити їх AJAX-запитом
+                if (!commentSection.data('loaded')) {
+                    $.ajax({
+                        url: '{% url "load_comments" %}', // Маршрут для завантаження коментарів
+                        data: { 'announcement_id': announcementId },
+                        success: function(response) {
+                            if (response.success) {
+                                response.comments.forEach(comment => {
+                                    commentSection.find('.existing-comments').append(
+                                        `<p><strong>${comment.user}</strong> (${comment.created_at}): ${comment.text}</p>`
+                                    );
+                                });
+                                commentSection.data('loaded', true); // Позначаємо коментарі як завантажені
+                                commentSection.show(); // Відображаємо секцію коментарів
+                            }
+                        },
+                        error: function() {
+                            alert("Не вдалося завантажити коментарі.");
+                        }
+                    });
+                } else {
+                    commentSection.show();
+                }
+            }
+        }
+
+        // Прив’язка функції toggleComments до кнопок
+        $('.toggle-comments-button').click(function() {
+            const announcementId = $(this).data('announcement-id');
+            toggleComments(announcementId);
+        });
+
+
+        // AJAX для надсилання коментаря
+        $(document).on('submit', '.comment-form', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const announcementId = form.data('announcement-id');
+            const text = form.find('textarea[name="text"]').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "add_comment" %}',
+                data: {
+                    'announcement_id': announcementId,
+                    'text': text,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#comments-' + announcementId + ' .existing-comments').append(
+                            `<p><strong>${response.user}</strong> (${response.created_at}): ${response.text}</p>`
+                        );
+                        form.find('textarea[name="text"]').val(''); // Очистити текстове поле
+                    } else {
+                        alert("Не вдалося додати коментар.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error);
+                    alert("Помилка при додаванні коментаря.");
+                }
+            });
+        });
+        function submitSearch() {
+            const input = document.getElementById('search-input');
+            const form = document.getElementById('search-form');
+            
+            // Оновлює параметр у URL
+            const url = new URL(form.action, window.location.origin);
+            url.searchParams.set('search', input.value);
+
+            // Відправляє запит і оновлює контент сторінки
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    // Оновлює елементи з результатами
+                    document.querySelector('.list-elements').innerHTML = new DOMParser().parseFromString(html, 'text/html').querySelector('.list-elements').innerHTML;
+                })
+                .catch(error => console.error('Помилка:', error));
+        }
+
+        document.querySelectorAll('.menu-btn').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();  // Запобігає закриттю меню, коли натискаєте на кнопку
+                const menu = this.closest('.post-menu');
+                menu.classList.toggle('active'); // Перемикає активність меню
+            });
+        });
+
+        // Закриття меню при кліку поза його межами
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.post-menu')) {
+                document.querySelectorAll('.post-menu').forEach(menu => {
+                    menu.classList.remove('active');  // Сховує меню при кліку поза ним
+                });
+            }
+        });
     });
+
     
 </script>
 {% endblock %}

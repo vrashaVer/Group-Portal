@@ -14,7 +14,7 @@
 }
 .sidebar {
     padding-top: 20px;
-    width: 230px;
+    width: 300px;
     height: 100%; /* Займає всю висоту контейнера */
     box-sizing: border-box; /* Включає відступи в загальний розрахунок */
     background-color: #f5f5f5;

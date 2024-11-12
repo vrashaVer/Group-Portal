@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load video_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'gallery.css' %}">
+
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery'%}">Галерея</a>
+            <a href="">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+    
+</aside>
+
+<div class="container">
+    <a href="{% url 'create_post_with_photos'%}">Додати пост</a>
+
+    {% for post in posts %}
+        <div class="post">
+            <div class="post-header">
+                <div class="post-title">{{ post.title }}</div>
+                <div class="post-menu">
+                    <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                    <div class="dropdown-menu">
+                        <a href="{% url 'edit_post' post.id %}">Редагувати</a>
+                        <form method="post" action="{% url 'delete_post' post.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="post-content">{{ post.content }}</div>
+            
+            <!-- Перевірка на кількість фотографій -->
+            {% if post.photos.count == 1 %}
+                <div class="single-photo">
+                    <img src="{{ post.photos.first.image.url }}" alt="{{ post.photos.first.caption }}" class="modal-trigger">
+                </div>
+            {% else %}
+                <div class="photo-grid">
+                    {% for photo in post.photos.all %}
+                        <div class="photo">
+                            <img src="{{ photo.image.url }}" alt="{{ photo.caption }}" class="modal-trigger">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="post-date">
+                <p>{{ post.created_at|date:"d M Y, H:i" }}</p> 
+                {% if post.edited %}
+                    <span class="edited-badge">(Редаговано)</span>
+                {% endif %}
+            </div>
+        </div>
+        <div id="modal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="modalImage">
+            <div id="caption"></div>
+        </div>
+    {% empty %}
+        <div class="empty-message">No posts available.</div>
+    {% endfor %}
+</div>
+
+<script>
+    const images = document.querySelectorAll('.modal-trigger');
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImage');
+    const captionText = document.getElementById('caption');
+    const closeBtn = document.querySelector('.close');
+    const headerTitle = document.querySelector('.header-title'); // Отримуємо елемент header-title
+
+    // Для кожної фотографії додаємо подію на клік
+    images.forEach(img => {
+        img.addEventListener('click', function() {
+            modal.style.display = 'block';        // Відкриваємо модальне вікно
+            modalImg.src = this.src;              // Встановлюємо джерело модального зображення
+            captionText.innerHTML = this.alt;     // Додаємо підпис (alt) до фотографії
+            document.body.style.overflow = 'hidden'; // Блокуємо прокрутку
+            if (headerTitle) {
+                headerTitle.style.display = 'none'; // Приховуємо header
+            }
+        });
+    });
+
+    // Закриваємо модальне вікно при натисканні на кнопку "Закрити"
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';  // Закриваємо модальне вікно
+        document.body.style.overflow = ''; // Відновлюємо прокрутку
+        if (headerTitle) {
+            headerTitle.style.display = ''; // Відновлюємо видимість header
+        }
+    });
+
+    // Закриваємо модальне вікно при натисканні поза межами зображення
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';  // Закриваємо модальне вікно
+            document.body.style.overflow = ''; // Відновлюємо прокрутку
+            if (headerTitle) {
+                headerTitle.style.display = ''; // Відновлюємо видимість header
+            }
+        }
+    });
+    document.querySelectorAll('.menu-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const menu = this.closest('.post-menu');
+            menu.classList.toggle('active'); // Перемикає активність меню
+        });
+    });
+
+    // Закриття меню при кліку поза його межами
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.post-menu')) {
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+
+

@@ -68,4 +68,22 @@ class Vote(models.Model):
         unique_together = ('user','poll')
 
 
+class PhotoPost(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+class Photo(models.Model):
+    post = models.ForeignKey(PhotoPost, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='gallery/photos/')
+
+    def __str__(self):
+        return f"Photo for {self.post.title}"
+
+
 

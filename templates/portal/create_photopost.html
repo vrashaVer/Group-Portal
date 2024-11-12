@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Create a New Post with Photos</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+
+    <!-- Поле для завантаження декількох фотографій -->
+    <label for="photos">Select Photos (up to 10):</label>
+    <input type="file" name="photos" multiple required>
+
+    <button type="submit">Submit Post</button>
+  </form>
+{% endblock %}

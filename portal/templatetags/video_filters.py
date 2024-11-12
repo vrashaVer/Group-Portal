@@ -9,3 +9,8 @@ def extract_video_id(url):
     if match:
         return match.group(1)
     return None
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

@@ -39,3 +39,82 @@
 .sidebar-nav a:hover {
     background-color: rgb(100, 116, 147);
 }
+
+
+.announcement{
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.poll{
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+    padding: 10px; /* Внутрішні відступи для контейнера пошуку */
+    background-color: #f9f9f9; /* Колір фону для пошукової стрічки */
+    border-bottom: 1px solid #ccc; /* Рамка знизу для відділення від списку завдань */
+    text-align: center; /* Центрування вмісту контейнера */
+}
+
+.search-bar {
+    width: 90%; /* Зменшуємо ширину, щоб не виходила за межі */
+    max-width: 700px; /* Максимальна ширина для пошукової стрічки */
+    padding: 8px;
+    margin: 0 auto; /* Центрування по горизонталі */
+    display: block; /* Блочний елемент для центрування */
+}
+
+
+.post-menu {
+    position: relative; /* Для правильного позиціонування меню відносно кнопки */
+}
+
+/* Стилізація кнопки */
+.menu-btn {
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* Сховати меню за замовчуванням */
+.dropdown-menu {
+    display: none; /* Меню за замовчуванням приховане */
+    position: absolute;
+    top: 100%;  /* Меню буде з'являтись під кнопкою */
+    left: 0;    /* Меню вирівнюється по лівому краю кнопки */
+    background-color: white;
+    border: 1px solid #ddd;
+    z-index: 10; /* Перекриває інші елементи */
+}
+
+/* Стилізація елементів у меню */
+.dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    color: black;
+    text-decoration: none;
+    background-color: white;
+    border: 1px solid #ddd;
+    margin-bottom: 4px;
+}
+
+/* Стилізація при наведенні */
+.dropdown-menu a:hover {
+    background-color: #f0f0f0;
+}
+
+/* Клас активності для меню */
+.post-menu.active .dropdown-menu {
+    display: block;  /* Показує меню, коли додається клас active */
+}
