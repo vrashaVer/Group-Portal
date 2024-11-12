@@ -1,0 +1,203 @@
+/* Sidebar */
+.sidebar-div{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar {
+    padding-top: 20px;
+    width: 250px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+   
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 30px;
+}
+
+.post {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-title {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.post-content {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+/* Сітка для фотографій */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+/* Стилі для фотографій */
+.photo-grid img {
+    width: 100%;        /* Ширина фотографії на 100% */
+    height: 300px;      /* Висота однакова для всіх фотографій */
+    object-fit: cover;  /* Підлаштовуємо фото по контейнеру, зберігаючи пропорції */
+    border-radius: 5px;
+}
+
+
+
+/* Стилі для 1 фотографії */
+.single-photo img {
+    height: 500px;      /* Для однієї фотографії зробити її більшою */
+    object-fit: cover;  /* Підлаштовуємо фото по контейнеру */
+}
+
+/* Стилі для порожнього стану */
+.empty-message {
+    text-align: center;
+    font-size: 1.5em;
+    color: #777;
+}
+
+
+
+.modal {
+    display: none;          /* За замовчуванням модальне вікно приховане */
+    position: fixed;        /* Фіксоване положення на екрані */
+    z-index: 1;             /* На передньому плані */
+    padding-top: 60px;      /* Відступ зверху */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;         /* Прокручування, якщо потрібно */
+    background-color: rgba(0, 0, 0, 0.8); /* Напівпрозорий фон */
+}
+
+/* Модальне зображення */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;       /* Максимальна ширина */
+}
+
+/* Кнопка закриття */
+.close {
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Підпис до зображення */
+#caption {
+    margin: 10px auto;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+}
+
+.post {
+    position: relative; /* Для позиціонування дати відносно цього елемента */
+}
+
+.post-date {
+    position: absolute;
+    bottom: 10px;   /* Відступ від нижнього краю */
+    right: 10px;    /* Відступ від правого краю */
+    font-size: 0.9em;
+    color: #777;
+    text-align: right; /* Вирівнювання тексту по правому краю */
+}
+
+.post-menu {
+    position: absolute;
+    top: 10px;  /* Відступ від верхнього краю */
+    right: 10px;  /* Відступ від правого краю */
+    cursor: pointer;
+}
+
+.menu-btn {
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Випадаюче меню */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f0f0f0;
+}
+
+/* Показати меню при кліку */
+.post-menu.active .dropdown-menu {
+    display: block;
+}
