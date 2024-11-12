@@ -204,12 +204,12 @@ class AddAnnouncementView(LoginRequiredMixin, CreateView):
         return render(self.request, self.template_name, {'form': form})
 
     def extract_youtube_video_id(self, url):
-        # Регулярний вираз для перевірки та витягування ID відео YouTube
-        youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|vimeo)\.(com|be)/.*(?:\/|v=)([^?&/]+)"
+        youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|vimeo)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^?&/]+)"
         match = re.match(youtube_regex, url)
         if match:
-            return match.group(4)  # ID відео
+            return match.group(6)  # ID відео
         return None
+    
 
 
 
