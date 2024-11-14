@@ -2,7 +2,7 @@ from django.views.generic import ListView, View, CreateView, UpdateView
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto
+from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, Event
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,AnnouncementPhotoForm
@@ -349,3 +349,8 @@ class PhotoPostDeleteView(View):
 
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('gallery'))
+    
+class EventListView(ListView):
+    model = Event
+    template_name = 'portal/events_page.html'
+    context_object_name = 'events'

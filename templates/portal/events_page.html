@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'main.css' %}">
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery' %}">Галерея</a>
+            <a href="{% url 'event_list'%}">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+</aside>
+
+<div class="main-container">
+    <div class="search-container">
+        <form id="search-form" method="get" action="{% url 'event_list' %}">
+            <input type="text" name="search" placeholder="Пошук подій на рік..." class="search-bar">
+        </form>
+    </div>
+
+    <div class="list-elements">
+        {% for event in events %}
+            <div class="event">
+                <h2>{{ event.title }}</h2>
+                <p>Дата: {{ event.date }}</p>
+                <p>{{ event.description }}</p>
+                
+                {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="Зображення події {{ event.title }}">
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
