@@ -14,6 +14,9 @@ urlpatterns = [
     path('post/<int:pk>/edit/', views.PhotoPostEditView.as_view(), name='edit_post'),
     path('delete_post/<int:pk>/', views.PhotoPostDeleteView.as_view(), name='delete_post'),
     path('add-announcement/', views.AddAnnouncementView.as_view(), name='add_announcement'),
+    path('add-poll/', views.CreatePollView.as_view(), name='add_poll'),
+    path('delete_polls/<int:pk>/', views.PollDeleteView.as_view(), name='poll_delete'),
+    path('delete_announcement/<int:pk>/', views.AnnouncementDeleteView.as_view(), name='announcement_delete'),
     ]
 
 if settings.DEBUG:

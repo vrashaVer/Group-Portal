@@ -1,5 +1,6 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, Poll, Choice
+from django.forms import inlineformset_factory
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -51,3 +52,12 @@ class AnnouncementPhotoForm(forms.ModelForm):
     class Meta:
         model = AnnouncementPhoto
         fields = ['image']
+
+class PollForm(forms.ModelForm):
+    class Meta:
+        model = Poll
+        fields = ['question']
+
+ChoiceFormSet = inlineformset_factory(
+    Poll, Choice, fields=['choice_text'], extra=0, min_num=2, max_num=10, validate_min=True, validate_max=True
+)

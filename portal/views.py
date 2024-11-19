@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,AnnouncementPhotoForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, PollForm, ChoiceFormSet
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -204,11 +204,10 @@ class AddAnnouncementView(LoginRequiredMixin, CreateView):
         return render(self.request, self.template_name, {'form': form})
 
     def extract_youtube_video_id(self, url):
-        # Регулярний вираз для перевірки та витягування ID відео YouTube
-        youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|vimeo)\.(com|be)/.*(?:\/|v=)([^?&/]+)"
+        youtube_regex = r"(https?://)?(www\.)?(youtube|youtu|vimeo)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^?&/]+)"
         match = re.match(youtube_regex, url)
         if match:
-            return match.group(4)  # ID відео
+            return match.group(6)  # ID відео
         return None
 
 
@@ -279,7 +278,31 @@ class GalleryView(View):
         posts = PhotoPost.objects.all().order_by('-created_at')  # Сортуємо пости від нових до старих
         return render(request, self.template_name, {'posts': posts})
     
-    
+class CreatePollView(View):
+    template_name = 'portal/create_poll.html'
+
+    def get(self, request, *args, **kwargs):
+        poll_form = PollForm()
+        choice_formset = ChoiceFormSet(queryset=Choice.objects.none())
+        return render(request, self.template_name, {'poll_form': poll_form, 'choice_formset': choice_formset})
+
+    def post(self, request, *args, **kwargs):
+        poll_form = PollForm(request.POST)
+        choice_formset = ChoiceFormSet(request.POST)
+
+        if poll_form.is_valid() and choice_formset.is_valid():
+            poll = poll_form.save()
+            choices = choice_formset.save(commit=False)
+            for choice in choices:
+                choice.poll = poll
+                choice.save()
+            return redirect('main')  
+
+        return render(request, self.template_name, {'poll_form': poll_form, 'choice_formset': choice_formset}) 
+
+
+
+
 class CreatePostWithPhotosView(View):
     def get(self, request):
         post_form = PostForm()
@@ -339,13 +362,33 @@ class PhotoPostDeleteView(View):
     def post(self, request, pk):
         # Отримуємо пост
         post = get_object_or_404(PhotoPost, pk=pk)
-
-        # Перевіряємо, чи автор поста є поточним користувачем
-        if post.author != request.user:
-            return HttpResponseForbidden("Ви не можете видалити цей пост.")
-
         # Видаляємо пост
         post.delete()
 
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('gallery'))
+    
+class PollDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        poll = get_object_or_404(Poll, pk=pk)
+
+        # Видаляємо пост
+        poll.delete()
+
+        # Перенаправляємо на сторінку галереї після видалення
+        return HttpResponseRedirect(reverse_lazy('main'))
+    
+class AnnouncementDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        announcement = get_object_or_404(Announcement, pk=pk)
+
+        # Видаляємо пост
+        announcement.delete()
+
+        # Перенаправляємо на сторінку галереї після видалення
+        return HttpResponseRedirect(reverse_lazy('main'))
+    
+
+
