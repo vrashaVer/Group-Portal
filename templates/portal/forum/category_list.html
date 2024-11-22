@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load video_filters %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'category_list.css' %}">
+
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery'%}">Галерея</a>
+            <a href="">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+
+    
+</aside>
+
+<div class="main-container">
+    <a href="{% url 'create_category' %}">Create New Category</a>
+    <h1>Forum Categories</h1>
+    <ul>
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'forum_post_list' category.id %}">{{ category.name }}</a>
+                <form method="post" action="{% url 'delete_forum_category' category.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
+                </form>
+                <a href="{% url 'edit_category' category.id %}" class="edit-link">Редагувати</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
+
+

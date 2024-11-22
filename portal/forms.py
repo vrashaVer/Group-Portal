@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -47,7 +47,12 @@ class AnnouncementForm(forms.ModelForm):
 
         return cleaned_data
     
-class AnnouncementPhotoForm(forms.ModelForm):
+class ForumPostForm(forms.ModelForm):
     class Meta:
-        model = AnnouncementPhoto
-        fields = ['image']
+        model = ForumPost
+        fields = ['title', 'text', 'image', 'video', 'category']
+
+class ForumCategoryForm(forms.ModelForm):
+    class Meta:
+        model = ForumCategory
+        fields = ['name']

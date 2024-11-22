@@ -1,14 +1,15 @@
-from django.views.generic import ListView, View, CreateView, UpdateView
+from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto
+from django.views.generic.edit import FormMixin
+from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, ForumCategory, ForumPost
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,AnnouncementPhotoForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, ForumCategoryForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import Count
 from django.db.models import Q
 import re
@@ -349,3 +350,177 @@ class PhotoPostDeleteView(View):
 
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('gallery'))
+    
+
+
+
+class CategoryListView(ListView):
+    model = ForumCategory
+    template_name = 'portal/forum/category_list.html'
+    context_object_name = 'categories'
+
+
+class ForumPostListView(ListView):
+    model = ForumPost
+    template_name = 'portal/forum/forum_post_list.html'
+    context_object_name = 'forum_posts'
+
+    def get_queryset(self):
+        category_id = self.kwargs.get('category_id')
+        if not ForumCategory.objects.filter(id=category_id).exists():
+            return ForumPost.objects.none()  # Якщо категорія не існує
+        return ForumPost.objects.filter(category_id=category_id).order_by('-created_at')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category_id'] = self.kwargs['category_id']  # Додаємо category_id у контекст
+        return context
+
+class ForumPostDetailView(FormMixin, DetailView):
+    model = ForumPost
+    template_name = 'portal/forum/forum_post_detail.html'
+    context_object_name = 'forum_posts'
+    form_class = CommentForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        context['comments'] = self.object.comments.all().order_by('-created_at')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.content_object = self.object  # Прив’язуємо коментар до поста
+            comment.save()
+            return redirect('forum_post_detail', pk=self.object.pk)
+        else:
+            return self.form_invalid(form)
+
+
+class AddCommentForumView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
+        text = request.POST.get('text')
+        forum_post = ForumPost.objects.get(id=post_id)
+
+        # Додаємо коментар, прив’язаний до ForumPost через GenericRelation
+        comment = Comment.objects.create(
+            user=request.user,
+            content_type=ContentType.objects.get_for_model(ForumPost),
+            object_id=forum_post.id,
+            text=text)
+
+        return JsonResponse({
+            'success': True,
+            'username': comment.user.username,
+            'created_at': comment.created_at.strftime("%d %b %Y %H:%M"),
+            'text': comment.text,
+        })
+    
+class ForumCategoryCreateView(CreateView):
+    model = ForumCategory
+    template_name = 'portal/forum/create_category.html'  # Вкажіть ваш шаблон
+    fields = ['name']  # Поля, які будуть у формі
+    success_url = reverse_lazy('category_list')  # URL, куди перенаправити після створення
+
+    def form_valid(self, form):
+        # Додаткові дії перед збереженням, якщо необхідно
+        return super().form_valid(form)
+    
+
+class ForumPostDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        post = get_object_or_404(ForumPost, pk=pk)
+
+        # Перевіряємо, чи автор поста є поточним користувачем
+        if post.author != request.user:
+            return HttpResponseForbidden("Ви не можете видалити цей пост.")
+
+        # Зберігаємо ID категорії для перенаправлення
+        category_id = post.category_id
+
+        # Видаляємо пост
+        post.delete()
+
+        # Перенаправляємо на список постів категорії
+        return HttpResponseRedirect(reverse('forum_post_list', kwargs={'category_id': category_id}))
+    
+class ForumPostUpdateView(LoginRequiredMixin, UpdateView):
+    model = ForumPost
+    template_name = 'portal/forum/edit_forum_post.html'
+    fields = ['title', 'text', 'image', 'video']
+
+    def get_queryset(self):
+        # Обмежуємо редагування постів лише автору
+        return super().get_queryset().filter(author=self.request.user)
+
+    def get_success_url(self):
+        # Повертає URL для детальної сторінки поста після редагування
+        return reverse_lazy('forum_post_detail', kwargs={'pk': self.object.pk})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаємо URL сторінки деталей поста
+        context['post_detail_url'] = reverse_lazy('forum_post_detail', kwargs={'pk': self.object.pk})
+        return context
+
+
+class ForumCategoryDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        category = get_object_or_404(ForumCategory, pk=pk)
+
+
+        # Видаляємо пост
+        category.delete()
+
+        # Перенаправляємо на сторінку галереї після видалення
+        return HttpResponseRedirect(reverse_lazy('category_list'))
+    
+class ForumCategoryEditView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        category = get_object_or_404(ForumCategory, pk=pk)
+
+        # Перевірка на дозволи, можна редагувати тільки адміністратору
+        if not request.user.is_staff:
+            return HttpResponseForbidden("Ви не можете редагувати цю категорію.")
+
+        form = ForumCategoryForm(instance=category)
+        return render(request, 'portal/forum/category_edit.html', {'form': form, 'category': category})
+
+    def post(self, request, pk):
+        category = get_object_or_404(ForumCategory, pk=pk)
+
+        # Перевірка на дозволи
+        if not request.user.is_staff:
+            return HttpResponseForbidden("Ви не можете редагувати цю категорію.")
+
+        form = ForumCategoryForm(request.POST, instance=category)
+
+        if form.is_valid():
+            form.save()  # Зберігаємо зміни
+            return redirect('category_list')  # Після успішного редагування перенаправляємо на список категорій
+        return render(request, 'portal/forum/category_edit.html', {'form': form, 'category': category})
+    
+class ForumPostCreateView(LoginRequiredMixin, CreateView):
+    model = ForumPost
+    template_name = 'portal/forum/add_forum_post.html'
+    fields = ['title', 'text', 'image', 'video']
+
+    def form_valid(self, form):
+        # Отримуємо категорію за ID
+        category = get_object_or_404(ForumCategory, pk=self.kwargs['category_id'])
+        form.instance.category = category  # Прив’язуємо пост до категорії
+        form.instance.author = self.request.user  # Додаємо автора
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(ForumCategory, pk=self.kwargs['category_id'])
+        return context
+
+    def get_success_url(self):
+        # Повертаємо на список постів у категорії після створення
+        return reverse_lazy('forum_post_list', kwargs={'category_id': self.kwargs['category_id']})

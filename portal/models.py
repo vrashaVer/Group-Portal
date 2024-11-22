@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey,GenericRelation
 
 class Announcement(models.Model):
     title = models.CharField(max_length=100)
@@ -87,3 +87,26 @@ class Photo(models.Model):
 
 
 
+
+
+
+class ForumCategory(models.Model):
+    name = models.CharField(max_length=255, unique=True)   
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class ForumPost(models.Model):
+    category = models.ForeignKey(ForumCategory, on_delete=models.CASCADE, related_name='forum_posts')  
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='forum_posts')  
+    title = models.CharField(max_length=255)  
+    text = models.TextField() 
+    image = models.ImageField(upload_to='forum_posts/images/', blank=True, null=True)  
+    video = models.FileField(upload_to='forum_posts/videos/', blank=True, null=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    comments = GenericRelation(Comment)
+
+    def __str__(self):
+        return self.title

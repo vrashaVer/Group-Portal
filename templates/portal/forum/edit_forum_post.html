@@ -1,0 +1,7 @@
+<h1>Редагувати пост</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Зберегти зміни</button>
+</form>
+<a href="{{ request.GET.next|default:post_detail_url }}" class="btn btn-secondary">Назад</a>

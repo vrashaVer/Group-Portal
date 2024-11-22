@@ -1,0 +1,21 @@
+<h1>Posts in Category</h1>
+<a href="{% url 'add_forum_post' category_id %}" class="btn btn-success">Додати новий пост</a>
+{% if forum_posts %}
+    <ul>
+        {% for post in forum_posts %}
+            <li>
+                <a href="{% url 'forum_post_detail' post.id %}">{{ post.title }}</a>
+                <form method="post" action="{% url 'delete_forum_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                </form>
+                <a href="{% url 'edit_forum_post' post.id %}?next={{ request.get_full_path }}">Редагувати</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No posts available in this category.</p>
+{% endif %}
+<a href="{% url 'category_list'  %}" class="back-link">Назад</a>
+
+

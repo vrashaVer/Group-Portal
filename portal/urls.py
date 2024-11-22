@@ -14,6 +14,16 @@ urlpatterns = [
     path('post/<int:pk>/edit/', views.PhotoPostEditView.as_view(), name='edit_post'),
     path('delete_post/<int:pk>/', views.PhotoPostDeleteView.as_view(), name='delete_post'),
     path('add-announcement/', views.AddAnnouncementView.as_view(), name='add_announcement'),
+    path('forum-topics-list', views.CategoryListView.as_view(), name='category_list'),
+    path('forum/topics/<int:category_id>/',views.ForumPostListView.as_view(), name='forum_post_list'),
+    path('forum-post/<int:pk>/', views.ForumPostDetailView.as_view(), name='forum_post_detail'),
+    path('forum/post/<int:post_id>/add_comment/', views.AddCommentForumView.as_view(), name='add_comment'),
+    path('forum/categories/create/', views.ForumCategoryCreateView.as_view(), name='create_category'),
+    path('forum/posts/edit/<int:pk>/', views.ForumPostUpdateView.as_view(), name='edit_forum_post'),
+    path('forum/posts/delete/<int:pk>/', views.ForumPostDeleteView.as_view(), name='delete_forum_post'),
+    path('forum/categories/delete/<int:pk>/', views.ForumCategoryDeleteView.as_view(), name='delete_forum_category'),
+    path('forum/categories/edit/<int:pk>/', views.ForumCategoryEditView.as_view(), name='edit_category'),
+    path('forum/categories/<int:category_id>/add_post/', views.ForumPostCreateView.as_view(), name='add_forum_post'),
     ]
 
 if settings.DEBUG:

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost
+from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost, ForumCategory, ForumPost
 
 admin.site.register(Announcement)
 admin.site.register(AnnouncementPhoto)
@@ -10,5 +10,8 @@ admin.site.register(Choice)
 admin.site.register(Vote)
 admin.site.register(PhotoPost)
 admin.site.register(Photo)
+admin.site.register(ForumCategory)
+admin.site.register(ForumPost)
+
 
 
