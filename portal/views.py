@@ -354,3 +354,18 @@ class EventListView(ListView):
     model = Event
     template_name = 'portal/events_page.html'
     context_object_name = 'events'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '').lower()
+        if search_query:
+            words = search_query.split()
+            query = Q()
+            for word in words:
+                query |= Q(title__icontains=word) | Q(content__icontains=word)
+            return Event.objects.filter(query).distinct()
+        return Event.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search'] = self.request.GET.get('search', '')
+        return context

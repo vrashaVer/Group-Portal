@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% load static %}
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'main.css' %}">
+<link rel="stylesheet" href="{% static 'events.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <aside class="sidebar" style="margin: 0;">
     <div class="sidebar-div">
@@ -12,15 +14,19 @@
             <a href="">Опитування</a>
         </nav>
     </div>
-</aside>
 
+
+</aside>
 <div class="main-container">
     <div class="search-container">
         <form id="search-form" method="get" action="{% url 'event_list' %}">
-            <input type="text" name="search" placeholder="Пошук подій на рік..." class="search-bar">
+            <input type="text" name="search" id="search-input" placeholder="Пошук подій на рік..." class="search-bar" value="{{ search }}" oninput="submitSearch()">
         </form>
-    </div>
 
+        <div class="post-menu">
+                <a href="">Додати подію</a>
+        </div>
+    </div>
     <div class="list-elements">
         {% for event in events %}
             <div class="event">
