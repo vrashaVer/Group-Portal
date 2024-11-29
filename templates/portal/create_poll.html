@@ -1,0 +1,69 @@
+<form method="post">
+    {% csrf_token %}
+    {{ poll_form.as_p }}
+
+    <div id="choice-forms">
+        {{ choice_formset.management_form }}
+        {% for form in choice_formset %}
+            <div class="choice-form">
+                {{ form.as_p }}
+                <button type="button" class="remove-choice" onclick="removeChoice(this)">Видалити</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-choice" onclick="addChoice()">Додати варіант</button>
+    <button type="submit">Create Poll</button>
+
+    {% if choice_formset.non_form_errors %}
+        <div class="error">
+            {{ choice_formset.non_form_errors }}
+        </div>
+    {% endif %}
+    <a href="{% url 'main'%}">Go back</a>
+</form>
+
+<script>
+    let formCount = {{ choice_formset.total_form_count }};
+    const maxForms = {{ choice_formset.max_num }};
+    const formContainer = document.getElementById("choice-forms");
+    const addChoiceButton = document.getElementById("add-choice");
+
+    function addChoice() {
+        if (formCount < maxForms) {
+            const newForm = document.createElement("div");
+            newForm.classList.add("choice-form");
+            newForm.innerHTML = `
+                ${choiceFormTemplate(formCount)}
+                <button type="button" class="remove-choice" onclick="removeChoice(this)">Видалити</button>
+            `;
+            formContainer.appendChild(newForm);
+            formCount++;
+            updateManagementForm();
+        }
+    }
+
+    function removeChoice(button) {
+        button.closest(".choice-form").remove();
+        formCount--;
+        updateManagementForm();
+    }
+
+    function updateManagementForm() {
+        document.querySelector("#id_choices-TOTAL_FORMS").value = formCount;
+        if (formCount >= maxForms) {
+            addChoiceButton.disabled = true;
+        } else {
+            addChoiceButton.disabled = false;
+        }
+    }
+
+    function choiceFormTemplate(index) {
+        return `
+            <label for="id_choices-${index}-choice_text">Choice text:</label>
+            <input type="text" name="choices-${index}-choice_text" maxlength="100" id="id_choices-${index}-choice_text">
+            <input type="hidden" name="choices-${index}-id" id="id_choices-${index}-id">
+            <input type="hidden" name="choices-${index}-poll" id="id_choices-${index}-poll">
+        `;
+    }
+</script>

@@ -1,0 +1,63 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h3>Existing Photos:</h3>
+    <div>
+        {% if photos %}
+            {% for photo in photos %}
+                <div>
+                    <img src="{{ photo.image.url }}" alt="Photo" style="max-width: 150px;">
+                    <button type="button" onclick="deletePhoto('{{ photo.id }}')">Delete</button>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No photos available.</p>
+        {% endif %}
+    </div>
+
+    <h3>Existing Video:</h3>
+    {% if video_url %}
+        <p>Video URL: <a href="{{ video_url }}" target="_blank">{{ video_url }}</a></p>
+        <input type="hidden" name="delete_video" id="delete_video_input" value="">
+        <button type="button" onclick="deleteVideo()">Delete Video</button>
+    {% else %}
+        <p>No video available.</p>
+    {% endif %}
+
+    <h3>Add New Media:</h3>
+    {{ photo_form.as_p }}
+
+    <button type="submit">Save Changes</button>
+
+    <a href="{% url 'main'%}">Go back</a>
+</form>
+
+<script>
+    function deleteVideo() {
+        document.getElementById('delete_video_input').value = "1";
+    }
+
+    function deletePhoto(photoId) {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '';
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = '{{ csrf_token }}';
+
+        const photoInput = document.createElement('input');
+        photoInput.type = 'hidden';
+        photoInput.name = 'delete_photo_id';
+        photoInput.value = photoId;
+
+        form.appendChild(csrfInput);
+        form.appendChild(photoInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+

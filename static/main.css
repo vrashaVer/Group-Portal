@@ -121,8 +121,82 @@
     display: block;  /* Показує меню, коли додається клас active */
 }
 
+.poll-menu {
+    position: relative;
+}
+
+.menu-btn-poll {
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.dropdown-menu-poll {
+    display: none; /* Приховане за замовчуванням */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    z-index: 10;
+}
+
+.dropdown-menu-poll a, .dropdown-menu-poll .delete-btn {
+    display: block;
+    padding: 8px 12px;
+    color: black;
+    text-decoration: none;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-menu-poll a:hover, .dropdown-menu-poll .delete-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.poll-menu.active .dropdown-menu-poll {
+    display: block;  /* Показує меню, коли є клас active */
+}
 
 
+.announcement-menu {
+    position: relative;
+}
+
+.menu-btn-announcement {
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.dropdown-menu-announcement {
+    display: none; /* Приховане за замовчуванням */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    z-index: 10;
+}
+
+.dropdown-menu-announcement a, .dropdown-menu-announcement .delete-btn {
+    display: block;
+    padding: 8px 12px;
+    color: black;
+    text-decoration: none;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-menu-announcement a:hover, .dropdown-menu-announcement .delete-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.announcement-menu.active .dropdown-menu-announcement {
+    display: block;  /* Показує меню, коли є клас active */
+}
 
 /* Sidebar events */
 .sidebar-div-events{

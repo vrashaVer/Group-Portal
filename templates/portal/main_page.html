@@ -28,7 +28,7 @@
             <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
             <div class="dropdown-menu">
                 <a href="{% url 'add_announcement'%}">Додати оголошення</a>
-                <a href="">Додати голосування</a>
+                <a href="{% url 'add_poll'%}">Додати голосування</a>
             </div>
         </div>
     </div>
@@ -36,8 +36,21 @@
         {% for item in items %}
             {% if item.title %}
                 <div class="announcement">
+                    <div class="announcement-header">
+                        <h2>{{ item.title }}</h2>
+                        <div class="announcement-menu">
+                            <button class="menu-btn-announcement">&#x22EE;</button>  
+                            <div class="dropdown-menu-announcement">  
+                                <a href="{% url 'edit_announcement' item.id%}">Редагувати</a>
+                                <form method="post" action="{% url 'announcement_delete' item.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                                </form>
+                            </div>
+                        </div> 
+                    </div>
                     <h2>{{ item.title }}</h2>
-                    <p>Created by: {{ item.creator }} </p>
+                    <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
                     <p>{{ item.content }}</p>
 
                     {% if item.video_file %}
@@ -57,9 +70,13 @@
                         {% endif %}
                     {% endif %}
                     {% for image in item.images.all %}
+                    
                         <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                    
+                   
                     {% endfor %}
 
+                    
                     <div class="announcement-footer">
                         <div class="left-actions">
                             <span class="like-count" data-announcement-id="{{ item.id }}">
@@ -82,8 +99,6 @@
                             {% endif %}
                         </div>
                     </div>
-                   
-                    
                 
                     <!-- Секція коментарів -->
                     <div id="comments-{{ item.id }}" class="comments-section" style="display: none;">
@@ -109,7 +124,19 @@
                 </div>
             {% elif item.question and item.choices.count > 1 %}
             <div class="poll">
-                <h2>{{ item.question }}</h2>
+                <div class="poll-header">
+                   <h2>{{ item.question }}</h2> 
+                   <div class="poll-menu">
+                    <button class="menu-btn-poll">&#x22EE;</button>  
+                    <div class="dropdown-menu-poll">  
+                        <form method="post" action="{% url 'poll_delete' item.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                        </form>
+                    </div>
+                </div>
+                </div>
+                
                 {% if item.id in user_voted_polls %}
                     <p>You have already voted. Here are the results:</p>
                     {% for choice in item.choices.all %}
@@ -329,6 +356,21 @@
             });
         });
 
+        document.querySelectorAll('.menu-btn-announcement').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();  // Запобігає закриттю меню, коли натискаєте на кнопку
+                const menu = this.closest('.announcement-menu');
+                menu.classList.toggle('active'); // Перемикає активність меню
+            });
+        });
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.announcement-menu')) {
+                document.querySelectorAll('.announcement-menu').forEach(menu => {
+                    menu.classList.remove('active');  // Сховує меню при кліку поза ним
+                });
+            }
+        });
+
         // Закриття меню при кліку поза його межами
         window.addEventListener('click', function(event) {
             if (!event.target.closest('.post-menu')) {
@@ -336,6 +378,22 @@
                     menu.classList.remove('active');  // Сховує меню при кліку поза ним
                 });
             }
+        });
+
+        document.querySelectorAll('.menu-btn-poll').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const menu = this.closest('.poll-menu'); // Оперуємо з `dropdown-menu-poll`
+                menu.classList.toggle('active'); // Додаємо клас `active` до меню
+            });
+        });
+
+        window.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown-menu-poll').forEach(menu => {
+                if (!event.target.closest('.poll-menu')) {
+                    menu.classList.remove('active'); // Приховуємо меню при кліку поза його межами
+                }
+            });
         });
     });
 

@@ -15,6 +15,10 @@ urlpatterns = [
     path('post/<int:pk>/edit/', views.PhotoPostEditView.as_view(), name='edit_post'),
     path('delete_post/<int:pk>/', views.PhotoPostDeleteView.as_view(), name='delete_post'),
     path('add-announcement/', views.AddAnnouncementView.as_view(), name='add_announcement'),
+    path('add-poll/', views.CreatePollView.as_view(), name='add_poll'),
+    path('delete_polls/<int:pk>/', views.PollDeleteView.as_view(), name='poll_delete'),
+    path('delete_announcement/<int:pk>/', views.AnnouncementDeleteView.as_view(), name='announcement_delete'),
+    path('announcement/<int:pk>/edit/', views.EditAnnouncementView.as_view(), name='edit_announcement'),
     path('forum-topics-list', views.CategoryListView.as_view(), name='category_list'),
     path('forum/topics/<int:category_id>/',views.ForumPostListView.as_view(), name='forum_post_list'),
     path('forum-post/<int:pk>/', views.ForumPostDetailView.as_view(), name='forum_post_detail'),
@@ -33,7 +37,7 @@ urlpatterns = [
     path('register-user/', views.UserRegistrationView.as_view(), name='register_user'),
     path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
     path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
-    
+
     ]
 
 if settings.DEBUG:

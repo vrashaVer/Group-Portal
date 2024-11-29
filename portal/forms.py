@@ -1,7 +1,7 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, Vote
+from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
-
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -48,6 +48,24 @@ class AnnouncementForm(forms.ModelForm):
             raise forms.ValidationError('You cannot provide both a video URL and a photo at the same time.')
 
         return cleaned_data
+
+class PollForm(forms.ModelForm):
+    class Meta:
+        model = Poll
+        fields = ['question']
+
+ChoiceFormSet = inlineformset_factory(
+    Poll, Choice, fields=['choice_text'], extra=0, min_num=2, max_num=10, validate_min=True, validate_max=True
+)
+
+
+class AnnouncementPhotoEditForm(forms.ModelForm):
+    class Meta:
+        model = AnnouncementPhoto
+        fields = ['image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
 class ForumPostForm(forms.ModelForm):
     class Meta:
@@ -91,3 +109,9 @@ class UserRegistrationForm(forms.ModelForm):
                 UserRole.objects.create(user=user, role=role)
 
         return user
+    
+
+class AnnouncementPhotoForm(forms.ModelForm):
+    class Meta:
+        model = AnnouncementPhoto
+        fields = ['image']

@@ -7,7 +7,7 @@ from django.views.generic.edit import FormMixin
 from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, ForumCategory, ForumPost, Role, UserRole, ProfileType
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, ForumCategoryForm, UserRegistrationForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,AnnouncementPhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
@@ -287,7 +287,31 @@ class GalleryView(View):
         posts = PhotoPost.objects.all().order_by('-created_at')  # Сортуємо пости від нових до старих
         return render(request, self.template_name, {'posts': posts})
     
-    
+class CreatePollView(View):
+    template_name = 'portal/create_poll.html'
+
+    def get(self, request, *args, **kwargs):
+        poll_form = PollForm()
+        choice_formset = ChoiceFormSet(queryset=Choice.objects.none())
+        return render(request, self.template_name, {'poll_form': poll_form, 'choice_formset': choice_formset})
+
+    def post(self, request, *args, **kwargs):
+        poll_form = PollForm(request.POST)
+        choice_formset = ChoiceFormSet(request.POST)
+
+        if poll_form.is_valid() and choice_formset.is_valid():
+            poll = poll_form.save()
+            choices = choice_formset.save(commit=False)
+            for choice in choices:
+                choice.poll = poll
+                choice.save()
+            return redirect('main')  
+
+        return render(request, self.template_name, {'poll_form': poll_form, 'choice_formset': choice_formset}) 
+
+
+
+
 class CreatePostWithPhotosView(View):
     def get(self, request):
         post_form = PostForm()
@@ -347,20 +371,113 @@ class PhotoPostDeleteView(View):
     def post(self, request, pk):
         # Отримуємо пост
         post = get_object_or_404(PhotoPost, pk=pk)
-
-        # Перевіряємо, чи автор поста є поточним користувачем
-        if post.author != request.user:
-            return HttpResponseForbidden("Ви не можете видалити цей пост.")
-
         # Видаляємо пост
         post.delete()
 
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('gallery'))
+class PollDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        poll = get_object_or_404(Poll, pk=pk)
+
+        # Видаляємо пост
+        poll.delete()
+
+        # Перенаправляємо на сторінку галереї після видалення
+        return HttpResponseRedirect(reverse_lazy('main'))
+    
+class AnnouncementDeleteView(View):
+    def post(self, request, pk):
+        # Отримуємо пост
+        announcement = get_object_or_404(Announcement, pk=pk)
+
+        # Видаляємо пост
+        announcement.delete()
+
+        # Перенаправляємо на сторінку галереї після видалення
+        return HttpResponseRedirect(reverse_lazy('main'))
     
 
+class EditAnnouncementView(LoginRequiredMixin, UpdateView):
+    model = Announcement
+    form_class = AnnouncementForm
+    template_name = 'portal/edit_announcement.html'
+    context_object_name = 'announcement'
 
+    def get_queryset(self):
+        return Announcement.objects.filter(creator=self.request.user)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            context['photo_form'] = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+        else:
+            context['photo_form'] = AnnouncementPhotoEditForm()
+        context['photos'] = self.object.images.all()
+
+        form = self.get_form()  # Отримуємо форму
+        if form.errors:
+            context['video_url'] = None  # Якщо є помилки, очищаємо video_url
+        else:
+            context['video_url'] = self.object.video_url
+           
+
+        return context
+
+    def form_valid(self, form):
+        announcement = form.save(commit=False)
+
+        # Видалення фото, якщо вказано
+        if 'delete_photo_id' in self.request.POST:
+            photo_id = self.request.POST.get('delete_photo_id')
+            AnnouncementPhoto.objects.filter(id=photo_id, announcement=announcement).delete()
+
+        # Перевірка на видалення відео
+        if 'delete_video' in self.request.POST:
+            announcement.video_file = None
+            announcement.video_url = None
+
+        # Перевірка обмежень на медіа
+        new_video_file = form.cleaned_data.get('video_file')
+        new_video_url = form.cleaned_data.get('video_url')
+        new_image = self.request.FILES.get('image')
+
+        if (announcement.images.exists() or new_image) and (new_video_file or new_video_url):
+            form.add_error(None, 'You cannot have both photos and a video (file or URL) at the same time.')
+            form.cleaned_data['video_file'] = None
+            form.cleaned_data['video_url'] = ''
+            return self.form_invalid(form)
+    
+        if new_video_file and new_video_url:
+            form.add_error(None, 'You cannot provide both a video file and a video URL. Please choose one.')
+            form.cleaned_data['video_file'] = None
+            form.cleaned_data['video_url'] = ''
+            return self.form_invalid(form)
+
+        announcement.edited = True
+        announcement.save()
+
+        # Додавання нового фото, якщо є
+        if new_image:
+            photo_form = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+            if photo_form.is_valid():
+                photo = photo_form.save(commit=False)
+                photo.announcement = announcement
+                photo.save()
+
+        return redirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        # Повертаємо форму з помилками без рекурсії
+        context = self.get_context_data(form=form)
+        context['photo_form'] = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+        context['video_url'] = ''  # Очищаємо URL відео при помилці
+        return self.render_to_response(context)
+
+    def get_success_url(self):
+        return reverse_lazy('main')  # Перенаправлення після редагування
+    
 class CategoryListView(ListView):
     model = ForumCategory
     template_name = 'portal/forum/category_list.html'
