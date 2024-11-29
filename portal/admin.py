@@ -1,5 +1,5 @@
 from django.contrib import admin
-from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost, ForumCategory, ForumPost,Role,UserRole, ProfileType
+from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost, Event, ForumCategory, ForumPost,Role,UserRole, ProfileType
 
 admin.site.register(Announcement)
 admin.site.register(AnnouncementPhoto)
@@ -10,6 +10,7 @@ admin.site.register(Choice)
 admin.site.register(Vote)
 admin.site.register(PhotoPost)
 admin.site.register(Photo)
+admin.site.register(Event)
 admin.site.register(ForumCategory)
 admin.site.register(ForumPost)
 
@@ -25,5 +26,3 @@ class UserRoleAdmin(admin.ModelAdmin):
 @admin.register(ProfileType)
 class ProfileTypeAdmin(admin.ModelAdmin):
     list_display = ('user', 'user_type')
-
-
