@@ -1,0 +1,68 @@
+.sidebar-div{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar {
+    padding-top: 20px;
+    width: 300px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+   
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+
+.search-container {
+    padding: 10px; /* Внутрішні відступи для контейнера пошуку */
+    background-color: #f9f9f9; /* Колір фону для пошукової стрічки */
+    border-bottom: 1px solid #ccc; /* Рамка знизу для відділення від списку завдань */
+    text-align: center; /* Центрування вмісту контейнера */
+}
+
+.search-bar {
+    width: 90%; /* Зменшуємо ширину, щоб не виходила за межі */
+    max-width: 700px; /* Максимальна ширина для пошукової стрічки */
+    padding: 8px;
+    margin: 0 auto; /* Центрування по горизонталі */
+    display: block; /* Блочний елемент для центрування */
+}
+
+.main-container {
+    width: 100%;
+}
+
+.event{
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
-from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, ForumCategory, ForumPost, Role, UserRole, ProfileType
+from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, Event, ForumCategory, ForumPost, Role, UserRole, ProfileType
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, ForumCategoryForm, UserRegistrationForm
@@ -771,3 +771,23 @@ class UserEditView(View):
             user.is_superuser or 
             UserRole.objects.filter(user=user, role__name="Admin").exists()
         )
+    
+class EventListView(ListView):
+    model = Event
+    template_name = 'portal/events_page.html'
+    context_object_name = 'events'
+
+    def get_queryset(self):
+        search_query = self.request.GET.get('search', '').lower()
+        if search_query:
+            words = search_query.split()
+            query = Q()
+            for word in words:
+                query |= Q(title__icontains=word) | Q(content__icontains=word)
+            return Event.objects.filter(query).distinct()
+        return Event.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search'] = self.request.GET.get('search', '')
+        return context

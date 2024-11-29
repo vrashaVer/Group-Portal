@@ -85,10 +85,13 @@ class Photo(models.Model):
     def __str__(self):
         return f"Photo for {self.post.title}"
 
-
-
-
-
+class Event(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    date = models.DateField()
+    def __str__(self):
+        return self.title
+    
 
 class ForumCategory(models.Model):
     name = models.CharField(max_length=255, unique=True)   
