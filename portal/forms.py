@@ -66,6 +66,7 @@ class AnnouncementPhotoEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['image'].required = False
     
 class ForumPostForm(forms.ModelForm):
     class Meta:

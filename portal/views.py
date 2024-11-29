@@ -429,9 +429,9 @@ class EditAnnouncementView(LoginRequiredMixin, UpdateView):
         announcement = form.save(commit=False)
 
         # Видалення фото, якщо вказано
-        if 'delete_photo_id' in self.request.POST:
-            photo_id = self.request.POST.get('delete_photo_id')
-            AnnouncementPhoto.objects.filter(id=photo_id, announcement=announcement).delete()
+        if 'delete_photo_ids' in self.request.POST:
+            photo_ids = self.request.POST.get('delete_photo_ids').split(',')
+            AnnouncementPhoto.objects.filter(id__in=photo_ids, announcement=announcement).delete()
 
         # Перевірка на видалення відео
         if 'delete_video' in self.request.POST:

@@ -20,11 +20,11 @@
     {% if video_url %}
         <p>Video URL: <a href="{{ video_url }}" target="_blank">{{ video_url }}</a></p>
         <input type="hidden" name="delete_video" id="delete_video_input" value="">
-        <button type="button" onclick="deleteVideo()">Delete Video</button>
+        <button type="button" onclick="deletePhoto('{{ photo.id }}')">Delete</button>
     {% else %}
         <p>No video available.</p>
     {% endif %}
-
+    <input type="hidden" name="delete_photo_ids" id="delete_photo_ids" value="">
     <h3>Add New Media:</h3>
     {{ photo_form.as_p }}
 
@@ -39,25 +39,20 @@
     }
 
     function deletePhoto(photoId) {
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '';
+        // Додаємо ID фото до прихованого поля
+        const inputField = document.getElementById('delete_photo_ids');
+        const currentIds = inputField.value ? inputField.value.split(',') : [];
+        if (!currentIds.includes(photoId)) {
+            currentIds.push(photoId);
+        }
+        inputField.value = currentIds.join(',');
 
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrfmiddlewaretoken';
-        csrfInput.value = '{{ csrf_token }}';
-
-        const photoInput = document.createElement('input');
-        photoInput.type = 'hidden';
-        photoInput.name = 'delete_photo_id';
-        photoInput.value = photoId;
-
-        form.appendChild(csrfInput);
-        form.appendChild(photoInput);
-        document.body.appendChild(form);
-        form.submit();
+        // Ховаємо фото на сторінці
+        const photoDiv = document.getElementById(`photo-${photoId}`);
+        if (photoDiv) {
+            photoDiv.style.display = 'none';
+        }
     }
+
+   
 </script>
-
-
