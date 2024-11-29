@@ -1,0 +1,18 @@
+<h1>Профіль користувача</h1>
+    <div>
+        <h2>{{ user_profile.username }}</h2>
+        <p><strong>Ім'я:</strong> {{ user_profile.first_name }}</p>
+        <p><strong>Прізвище:</strong> {{ user_profile.last_name }}</p>
+        <p><strong>Email:</strong> {{ user_profile.email }}</p>
+    </div>
+
+    <div>
+        <h3>Тип профілю</h3>
+        {% if profile_type %}
+            <p>{{ profile_type.get_user_type_display }}</p>
+        {% else %}
+            <p>Тип профілю не визначено</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'user_list' %}">Повернутися до списку користувачів</a>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація користувача</title>
+</head>
+<body>
+    <h1>Реєстрація нового користувача</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        {% if error_messages %}
+            <ul class="error-messages">
+                {% for error in error_messages %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">Зареєструвати</button>
+    </form>
+
+    <a href="{% url 'user_list' %}">Повернутися до списку користувачів</a>
+</body>
+</html>

@@ -1,5 +1,7 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole
+from django.contrib.auth.models import User
+
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -56,3 +58,36 @@ class ForumCategoryForm(forms.ModelForm):
     class Meta:
         model = ForumCategory
         fields = ['name']
+
+class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Підтвердити пароль")
+    role = forms.ModelChoiceField(queryset=Role.objects.all(), label="Роль", required=False)
+    user_type = forms.ChoiceField(choices=ProfileType.USER_TYPE_CHOICES, label="Тип користувача", required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password != confirm_password:
+            self.add_error('confirm_password', "Паролі не співпадають.")
+        return cleaned_data
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        # Установка пароля
+        user.set_password(self.cleaned_data['password'])
+
+        if commit:
+            user.save()
+
+            # Призначення ролі, якщо вибрана
+            role = self.cleaned_data.get('role')
+            if role:
+                UserRole.objects.create(user=user, role=role)
+
+        return user

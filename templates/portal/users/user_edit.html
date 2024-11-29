@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Редагувати користувача: {{ user.username }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="username">Ім'я користувача:</label>
+    <input type="text" id="username" name="username" value="{{ user.username }}" required>
+
+    <label for="email">Електронна пошта:</label>
+    <input type="email" id="email" name="email" value="{{ user.email }}" >
+
+    <label for="password">Новий пароль (якщо потрібно змінити):</label>
+    <input type="password" id="password" name="password">
+
+    {% if error_messages %}
+        <ul class="error-messages">
+            {% for error in error_messages %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <button type="submit">Зберегти</button>
+</form>
+{% endblock %}

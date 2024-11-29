@@ -1,5 +1,6 @@
 from django.urls import path
 from portal import views
+from django.contrib.auth.views import LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,6 +25,15 @@ urlpatterns = [
     path('forum/categories/delete/<int:pk>/', views.ForumCategoryDeleteView.as_view(), name='delete_forum_category'),
     path('forum/categories/edit/<int:pk>/', views.ForumCategoryEditView.as_view(), name='edit_category'),
     path('forum/categories/<int:category_id>/add_post/', views.ForumPostCreateView.as_view(), name='add_forum_post'),
+    path('login/', views.CustomLoginView.as_view(), name='login'), 
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('users/', views.UserListView.as_view(), name='user_list'),
+    path('profile/', views.UserProfileView.as_view(), name='user_profile'),
+    path('user/<int:pk>/', views.UserProfileView.as_view(), name='an_user_profile'),
+    path('register-user/', views.UserRegistrationView.as_view(), name='register_user'),
+    path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
+    path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
+    
     ]
 
 if settings.DEBUG:

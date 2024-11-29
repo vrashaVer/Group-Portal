@@ -37,7 +37,7 @@
             {% if item.title %}
                 <div class="announcement">
                     <h2>{{ item.title }}</h2>
-                    <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
+                    <p>Created by: {{ item.creator }} </p>
                     <p>{{ item.content }}</p>
 
                     {% if item.video_file %}
@@ -60,15 +60,30 @@
                         <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
                     {% endfor %}
 
+                    <div class="announcement-footer">
+                        <div class="left-actions">
+                            <span class="like-count" data-announcement-id="{{ item.id }}">
+                                {{ like_counts|get_item:item.id }}
+                            </span>
+                            <button class="like-button" data-announcement-id="{{ item.id }}">
+                                <span class="heart-icon {% if item.id in liked_announcements %}liked{% endif %}">❤</span>
+                            </button>
+                            <button class="toggle-comments-button" data-announcement-id="{{ item.id }}">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9l-4.2 1.1 1.1-4.2a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.5 8.5 0 017.5 7.5v.5z" />
+                                </svg>
+
+                            </button>
+                        </div>
+                        <div class="post-date">
+                            <p>{{ item.created_at|date:"d M Y, H:i" }}</p>
+                            {% if item.edited %}
+                                <span class="edited-badge">(Редаговано)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                   
                     
-                    <p class="like-count" data-announcement-id="{{ item.id }}">
-                        Likes: {{ like_counts|get_item:item.id }}
-                    </p>
-                    <button class="like-button" data-announcement-id="{{ item.id }}">
-                        {% if item.id in liked_announcements %} Unlike {% else %} Like {% endif %}
-                    </button>
-                
-                    <button class="toggle-comments-button" data-announcement-id="{{ item.id }}">Показати коментарі</button>
                 
                     <!-- Секція коментарів -->
                     <div id="comments-{{ item.id }}" class="comments-section" style="display: none;">
@@ -120,6 +135,10 @@
         {% endfor %}
     </div>
 </div>
+<aside class="sidebar-events" style="margin: 0;">
+    <div class="sidebar-div-events">
+    </div>
+</aside>
 
 
 <script>
@@ -134,31 +153,33 @@
             localStorage.setItem("scrollPosition", $(window).scrollTop());
         };
         // Обробка лайків
-        $(".like-button").click(function() {
+        $(".like-button").click(function () {
             var button = $(this);
-            var announcementId = button.data('announcement-id');
-            var action = button.text().trim() === 'Like' ? 'like' : 'unlike';
+            var announcementId = button.data("announcement-id");
+            var action = button.find(".heart-icon").hasClass("liked") ? "unlike" : "like";
 
             $.ajax({
-                url: "{% url 'main' %}",
+                url: "{% url 'main' %}", // Змінити на ваш маршрут
                 type: "POST",
                 data: {
-                    'announcement_id': announcementId,
-                    'action': action,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    announcement_id: announcementId,
+                    action: action,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response.success) {
-                        // Оновлюємо текст кнопки
-                        button.text(response.liked ? 'Unlike' : 'Like');
+                        // Додати або зняти клас 'liked' для оновлення стилю
+                        button.find(".heart-icon").toggleClass("liked");
 
-                        // Оновлюємо кількість лайків
-                        $('.like-count[data-announcement-id="' + response.announcement_id + '"]').text('Likes: ' + response.like_count); // використовуємо нову кількість лайків
+                        // Оновити кількість лайків
+                        $(`.like-count[data-announcement-id="${response.announcement_id}"]`).text(
+                            ` ${response.like_count}`
+                        );
                     } else {
                         console.error("Error:", response.error);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("AJAX error: " + status + ": " + error);
                 }
             });

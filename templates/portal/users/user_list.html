@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load role_tags %}
+{% load has_permission %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'test.css' %}">
+
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery'%}">Галерея</a>
+            <a href="">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+    
+</aside>
+
+
+<div class="container">
+    {% if request.user|has_permission:user %}
+    <a href="{% url 'register_user'%}">Зареєструвати користувача</a>
+    <a href="{% url 'users_data_list'%}">Дані користувачів</a>
+    {%endif%}
+    <h1>Користувачі</h1>
+
+    <div>
+        <h2>Власник:</h2>
+        <ul>
+            <li>
+                {{ owner.username }}
+                <!-- Немає кнопки для зміни ролі власника -->
+            </li>
+        </ul>
+    </div>
+
+    <!-- Адміністратори -->
+    <div>
+        <h2>Адміністратори:</h2>
+        <ul>
+            {% for user in admins %}
+                <li>
+                    <a href="{% url 'an_user_profile' user.id %}">{{ user.username }}</a>
+                    {% if  request.user.profile_type.user_type %}
+                        {% if request.user.profile_type.user_type == 'teacher' %}
+                            - Вчитель
+                        {% else %}
+                            -Учень
+                        {% endif %}
+                    {% endif %}
+                    {% if user != request.user and request.user.is_superuser %}
+                        <form method="post" action="{% url 'user_list' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="hidden" name="role" value="Admin">
+                            <button type="submit" name="action" value="remove_role">Зняти адміністраторські права</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Модератори -->
+    <div>
+        <h2>Модератори:</h2>
+        <ul>
+            {% for user in moderators %}
+                <li>
+                    {{ user.username }}
+                    {% if request.user|has_permission:user %}
+                        <form method="post" action="{% url 'user_list' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="hidden" name="role" value="Moderator">
+                            <button type="submit" name="action" value="remove_role">Зняти модераторські права</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Звичайні користувачі -->
+    <div>
+        <h2>Звичайні користувачі:</h2>
+        <ul>
+            {% for user in users %}
+                <li>
+                    {{ user.username }}
+                    {% if user != request.user %}
+                        {% if request.user|has_permission:user %}
+                        <form method="post" action="{% url 'user_list' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <select name="role">
+                                <option value="">Вибрати роль</option>
+                                {% if request.user.is_superuser %}
+                                    <option value="Admin">Admin</option>
+                                {% endif %}
+                                <option value="Moderator">Moderator</option>
+                            </select>
+                            <button type="submit" name="action" value="add_role">Призначити роль</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+</div>
+
+{% endblock %}

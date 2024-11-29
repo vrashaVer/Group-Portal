@@ -40,7 +40,9 @@
     background-color: rgb(100, 116, 147);
 }
 
-
+.main-container{
+    width: 90%;
+}
 .announcement{
     margin-bottom: 40px;
     padding: 20px;
@@ -117,4 +119,116 @@
 /* Клас активності для меню */
 .post-menu.active .dropdown-menu {
     display: block;  /* Показує меню, коли додається клас active */
+}
+
+
+
+
+/* Sidebar events */
+.sidebar-div-events{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar-events {
+    padding-top: 20px;
+    width: 300px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; /* Розмір іконки */
+}
+
+.heart-icon {
+    color: rgb(184, 184, 184); /* Стандартний колір для неактивного лайку */
+    transition: color 0.3s; /* Анімація зміни кольору */
+}
+
+.heart-icon.liked {
+    color: red; /* Червоний колір для активного лайку */
+}
+
+
+.toggle-comments-button {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Відступ між іконкою та текстом */
+    color: #262626; /* Темно-сірий колір */
+    font-size: 16px; /* Розмір тексту */
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.3s;
+}
+
+.toggle-comments-button:hover {
+    color: #0095f6; /* Синій колір при наведенні */
+}
+
+.toggle-comments-button svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #262626; /* Чорний контур іконки */
+    stroke-width: 2px;
+    transition: stroke 0.3s;
+}
+
+.toggle-comments-button:hover svg {
+    stroke: #0095f6; /* Синій контур при наведенні */
+}
+.announcement-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.left-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.left-actions .like-button,
+.left-actions .toggle-comments-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+.left-actions .heart-icon.liked {
+    transform: scale(1.2);
+}
+
+.post-date {
+    text-align: right;
+    font-size: 12px;
+    color: gray;
+}
+
+.post-date .edited-badge {
+    font-size: 10px;
+    color: #666;
 }

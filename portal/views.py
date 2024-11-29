@@ -1,22 +1,29 @@
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
+from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
-from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, ForumCategory, ForumPost
+from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, ForumCategory, ForumPost, Role, UserRole, ProfileType
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, ForumCategoryForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, ForumCategoryForm, UserRegistrationForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.db.models import Count
 from django.db.models import Q
 import re
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 
 class MainPageView(LoginRequiredMixin, ListView):
     template_name = 'portal/main_page.html'
     context_object_name = 'items'
+    login_url = reverse_lazy('login')
+    
 
     def get_queryset(self):
         announcements = Announcement.objects.prefetch_related('images').all()
@@ -524,3 +531,243 @@ class ForumPostCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         # Повертаємо на список постів у категорії після створення
         return reverse_lazy('forum_post_list', kwargs={'category_id': self.kwargs['category_id']})
+
+
+# class RegisterView(CreateView):
+#     form_class = CustomUserCreationForm
+#     template_name = 'portal/registration/register.html'
+#     success_url = reverse_lazy('home')  # Замість 'home' вставте вашу цільову URL-адресу
+
+#     def form_valid(self, form):
+#         user = form.save()
+#         login(self.request, user)  # Автоматично увійти після реєстрації
+#         return redirect(self.success_url)
+    
+class CustomLoginView(LoginView):
+    template_name = 'portal/registration/login.html'  # Вкажіть свій шаблон для входу
+    success_url = reverse_lazy('main')  # URL для перенаправлення після успішного входу
+
+
+class UserListView(LoginRequiredMixin,ListView):
+
+    model = User
+    template_name = 'portal/users/user_list.html'
+    context_object_name = 'users'
+
+    def test_func(self):
+        # Перевірка, чи є користувач адміністратором
+        return self.request.user.is_superuser
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Отримуємо власника, адміністраторів та модераторів
+        owner = User.objects.filter(is_superuser=True).first()  # Власник сайту
+        admin_role = Role.objects.get(name='Admin')
+        moderator_role = Role.objects.get(name='Moderator')
+
+        # Групуємо користувачів за ролями
+        admins = User.objects.filter(roles__role=admin_role)
+        moderators = User.objects.filter(roles__role=moderator_role)
+
+        # Виключаємо власника, адміністраторів і модераторів зі списку звичайних користувачів
+        users = User.objects.exclude(id__in=admins).exclude(id__in=moderators)
+        if owner:
+            users = users.exclude(id=owner.id)
+
+        context['owner'] = owner
+        context['admins'] = admins
+        context['moderators'] = moderators
+        context['users'] = users
+        context['roles'] = [admin_role, moderator_role]
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Перевірка, чи користувач має право на зміну ролей
+        if not (request.user.is_superuser or 
+                UserRole.objects.filter(user=request.user, role__name='Admin').exists()):
+            return HttpResponseForbidden("У вас немає прав для виконання цієї дії.")
+
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')  # 'add_role' або 'remove_role'
+        role_name = request.POST.get('role')  # Назва ролі, яку додаємо або забираємо
+
+        # Перевірка, чи існує користувач
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponseForbidden("Користувач не знайдений.")
+
+        # Власника не можна змінювати
+        if user.is_superuser:
+            return HttpResponseForbidden("Ви не можете змінювати права власника.")
+
+        # Перевірка, чи існує роль
+        try:
+            role = Role.objects.get(name=role_name)
+        except Role.DoesNotExist:
+            return HttpResponseForbidden(f"Роль '{role_name}' не знайдена в системі.")
+
+        # Обмеження дій залежно від ролі
+        if action == 'add_role':
+            # Власник може додати будь-яку роль
+            # Адміністратор може додати тільки роль модератора
+            if role.name == 'Admin' and not request.user.is_superuser:
+                return HttpResponseForbidden("Тільки власник може призначати адміністраторів.")
+            
+            if UserRole.objects.filter(user=user, role=role).exists():
+                return HttpResponseForbidden("Користувач вже має цю роль.")
+            UserRole.objects.create(user=user, role=role)
+
+        elif action == 'remove_role':
+        # Видалення ролі (тут `role_name` може бути пустим)
+            try:
+                user_role = UserRole.objects.filter(user=user, role__name=role_name).first()  # Отримуємо будь-яку роль
+                if user_role:
+                    role = user_role.role
+                    # Тільки власник може знімати роль адміністратора
+                    if role.name == 'Admin' and not request.user.is_superuser:
+                        return HttpResponseForbidden("Тільки власник може знімати адміністратора.")
+                    user_role.delete()
+                else:
+                    return HttpResponseForbidden("У користувача немає ролей для видалення.")
+            except Exception as e:
+                return HttpResponseForbidden(f"Помилка: {str(e)}")
+            
+        return redirect('user_list')
+    
+
+class UserProfileView(LoginRequiredMixin, View):
+    template_name = 'portal/users/user_profile.html'
+
+    def get(self, request):
+        
+        context = {
+            'user': request.user, 
+        }
+        return render(request, self.template_name, context)
+
+
+
+class UserProfileView(DetailView):
+    model = User
+    template_name = 'portal/users/an_user_profile.html'
+    context_object_name = 'user_profile'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Отримуємо тип профілю (якщо використовується модель `ProfileType`)
+        context['profile_type'] = ProfileType.objects.filter(user=self.object).first()
+        return context
+    
+class UserRegistrationView(View):
+    template_name = 'portal/registration/register_user.html'
+
+    def get(self, request):
+        # Перевірка, чи користувач має право доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        form = UserRegistrationForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                # Якщо пароль не відповідає правилам, повертаємо форму з помилками
+                return render(request, self.template_name, {
+                    'form': form,
+                    'error_messages': e.messages,
+                })
+
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+
+            # Додати роль користувачу
+            role = form.cleaned_data.get('role')
+            if role:
+                UserRole.objects.create(user=user, role=role)
+
+            # Додати тип профілю
+            user_type = form.cleaned_data['user_type']
+            ProfileType.objects.create(user=user, user_type=user_type)
+
+            return redirect('user_list')  # Повернення до списку користувачів
+
+        return render(request, self.template_name, {'form': form})
+
+    def _has_permission(self, user):
+        # Доступ мають тільки власник або адміністратори
+        return (
+            user.is_superuser or
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+        
+class UserDataListView(View):
+    template_name = 'portal/users/user_data_list.html'
+
+    def get(self, request):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        users = User.objects.all()
+        return render(request, self.template_name, {'users': users})
+
+    def _has_permission(self, user):
+        # Тільки власник або адміністратори мають доступ
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+
+
+class UserEditView(View):
+    template_name = 'portal/users/user_edit.html'
+
+    def get(self, request, pk):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        user = get_object_or_404(User, pk=pk)
+        return render(request, self.template_name, {'user': user})
+
+    def post(self, request, pk):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        user = get_object_or_404(User, pk=pk)
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user.username = username
+        user.email = email
+        if password:
+            try:
+                # Перевірка пароля за правилами Django
+                validate_password(password, user=user)
+                user.set_password(password)
+            except ValidationError as e:
+                # Повернення помилки, якщо пароль не відповідає правилам
+                return render(request, self.template_name, {
+                    'user': user,
+                    'error_messages': e.messages,
+                })
+
+        return redirect('user_list')
+
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )

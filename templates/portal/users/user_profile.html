@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'profile.css' %}">
+
+
+<div class="profile-container">
+    <h1>User Profile</h1>
+    
+    <div class="profile-info-container">
+        <div class="profile-photo-upload">
+            <div class="initials-container">
+                <p><strong>Profile Photo</strong></p>
+            </div>  
+        </div>  
+        <div class="divider-line"></div> <!-- Лінія між блоками -->
+
+        <div class="personal-info-section">
+            <h2>Personal Information</h2>
+            <div class="info-row">
+                <div class="info-column">
+                    <p><strong>First Name:</strong></p>
+                    <div class="info-box">{{ user.first_name|default:"-" }}</div>
+                </div>
+                <div class="info-column">
+                    <p><strong>Last Name:</strong></p>
+                    <div class="info-box">{{ user.last_name|default:"-" }}</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-column">
+                    <p><strong>Email:</strong></p>
+                    <div class="info-box">{{ user.email }}</div>
+                </div>
+                <div class="info-column">
+                    <p><strong>Username:</strong></p>
+                    <div class="info-box">{{ user.username }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

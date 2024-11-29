@@ -61,14 +61,20 @@ header {
 }
 
 /* Login link розташовується в кінці секції */
-.login-link {
+.user-menu {
     color: #fff;
     text-decoration: none;
     padding-right: 10px;
     margin-right: 10px;
     margin-left: auto; /* Дозволяє login-link розміщуватись справа */
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
 }
 
+.user-menu p:hover {
+    color: #ddd; /* Колір фону при наведенні */
+}
 
 
 /* Main Content */
@@ -94,4 +100,80 @@ footer {
     color: #fff;
     text-align: center;
     padding: 10px 0;
+}
+
+
+
+.dropdown-content {
+    display: none; /* Сховане за замовчуванням */
+    position: absolute;
+    right: 0; /* Вирівняти меню праворуч від значка */
+    
+    top: 23%;
+    background-color: #f9f9f9;
+    min-width: 250px; /* Збільшено ширину меню */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    margin-top: 10px; /* Додано відступ зверху для меню */
+}
+.dropdown-section:first-child {
+    padding: 20px 15px; /* Додано більші відступи зверху та знизу */
+}
+
+/* Сектори випадаючого меню */
+.dropdown-section {
+    padding: 0; /* Знято відступи, щоб уникнути пробілів */
+}
+
+/* Розділення між секторами */
+.dropdown-section:not(:last-child) {
+    border-bottom: 1px solid #ccc; /* Сіра риса між секторами */
+}
+
+/* Посилання в меню */
+.dropdown-content a {
+    color: black;
+    padding: 10px 15px; /* Збільшено padding для комфортнішого вигляду */
+    text-decoration: none;
+    display: block; /* Робить елемент блочним, щоб він займав всю ширину */
+    width: 100%; /* Встановлюємо ширину на 100% */
+    box-sizing: border-box; /* Додаємо до розрахунку ширини та висоти */
+}
+
+/* Ховер ефект для посилань */
+.dropdown-content a:hover {
+    background-color: #ddd; /* Колір фону при наведенні */
+}
+
+.user-email {
+    text-align: center; /* Вирівнюємо по центру */
+    color: #333; /* Текстовий колір */
+    margin-top: 5px; /* Відступ зверху */
+    font-size: 12px;
+}
+
+
+.logout-button {
+    width: 100%; /* Встановлюємо ширину на 100% */
+    padding: 10px; /* Додаємо відступи для кнопки */
+    background-color: transparent; /* Фон кнопки прозорий */
+    border: none; /* Без рамки */
+    text-align: left; /* Вирівнюємо текст по лівому краю */
+    cursor: pointer; /* Зміна курсору при наведенні */
+    font-family: Arial, sans-serif; /* Встановлюємо той самий шрифт */
+    font-size: 14px; /* Встановіть бажаний розмір шрифту */
+    color: black; /* Колір тексту */
+}
+/* Ховер ефект для кнопки */
+.logout-button:hover {
+    background-color: #ddd; /* Колір фону при наведенні */
+}
+
+.user-name-menu {
+    color: #333; /* Колір тексту */
+    margin-top: 5px; /* Відступ зверху */
+    font-size: 16px; /* Розмір шрифту */
+    text-align: center;
+   
 }

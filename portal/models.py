@@ -110,3 +110,30 @@ class ForumPost(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Role(models.Model):
+    name = models.CharField(max_length=50, unique=True)  
+    description = models.TextField(blank=True, null=True)  
+
+    def __str__(self):
+        return self.name
+    
+class UserRole(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='roles')  
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='users')  
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role.name}"
+
+
+class ProfileType(models.Model):
+    USER_TYPE_CHOICES = [
+        ('teacher', 'Teacher'),
+        ('student', 'Student'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile_type')
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_user_type_display()}"
