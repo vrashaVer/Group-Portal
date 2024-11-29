@@ -17,6 +17,7 @@ urlpatterns = [
     path('add-poll/', views.CreatePollView.as_view(), name='add_poll'),
     path('delete_polls/<int:pk>/', views.PollDeleteView.as_view(), name='poll_delete'),
     path('delete_announcement/<int:pk>/', views.AnnouncementDeleteView.as_view(), name='announcement_delete'),
+    path('announcement/<int:pk>/edit/', views.EditAnnouncementView.as_view(), name='edit_announcement'),
     ]
 
 if settings.DEBUG:

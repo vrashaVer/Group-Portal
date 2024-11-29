@@ -61,3 +61,13 @@ class PollForm(forms.ModelForm):
 ChoiceFormSet = inlineformset_factory(
     Poll, Choice, fields=['choice_text'], extra=0, min_num=2, max_num=10, validate_min=True, validate_max=True
 )
+
+
+class AnnouncementPhotoEditForm(forms.ModelForm):
+    class Meta:
+        model = AnnouncementPhoto
+        fields = ['image']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image'].required = False

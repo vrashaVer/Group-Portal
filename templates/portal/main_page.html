@@ -41,7 +41,7 @@
                         <div class="announcement-menu">
                             <button class="menu-btn-announcement">&#x22EE;</button>  
                             <div class="dropdown-menu-announcement">  
-                                <a href="">Редагувати</a>
+                                <a href="{% url 'edit_announcement' item.id%}">Редагувати</a>
                                 <form method="post" action="{% url 'announcement_delete' item.id %}" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
@@ -50,7 +50,7 @@
                         </div> 
                     </div>
           
-                    <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
+                    <p>Created by: {{ item.creator }} </p>
                     <p>{{ item.content }}</p>
 
                     {% if item.video_file %}
@@ -70,7 +70,11 @@
                         {% endif %}
                     {% endif %}
                     {% for image in item.images.all %}
+                    {% if image.image %}
                         <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                    {% else %}
+                        <p>No image available.</p>
+                    {% endif %}
                     {% endfor %}
 
                     
@@ -82,7 +86,12 @@
                     </button>
                 
                     <button class="toggle-comments-button" data-announcement-id="{{ item.id }}">Показати коментарі</button>
-                
+                    <div class="announcement-date">
+                        <p>{{ item.created_at|date:"d M Y, H:i" }}</p> 
+                        {% if item.edited %}
+                            <span class="edited-badge">(Редаговано)</span>
+                        {% endif %}
+                    </div>
                     <!-- Секція коментарів -->
                     <div id="comments-{{ item.id }}" class="comments-section" style="display: none;">
                         <div class="existing-comments">

@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, PollForm, ChoiceFormSet
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm, PollForm, ChoiceFormSet, AnnouncementPhotoForm, AnnouncementPhotoEditForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -391,4 +391,81 @@ class AnnouncementDeleteView(View):
         return HttpResponseRedirect(reverse_lazy('main'))
     
 
+class EditAnnouncementView(LoginRequiredMixin, UpdateView):
+    model = Announcement
+    form_class = AnnouncementForm
+    template_name = 'portal/edit_announcement.html'
+    context_object_name = 'announcement'
 
+    def get_queryset(self):
+        return Announcement.objects.filter(creator=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.method == "POST":
+            context['photo_form'] = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+        else:
+            context['photo_form'] = AnnouncementPhotoEditForm()
+        context['photos'] = self.object.images.all()
+
+        form = self.get_form()  # Отримуємо форму
+        if form.errors:
+            context['video_url'] = None  # Якщо є помилки, очищаємо video_url
+        else:
+            context['video_url'] = self.object.video_url
+           
+
+        return context
+
+    def form_valid(self, form):
+        announcement = form.save(commit=False)
+
+        # Видалення фото, якщо вказано
+        if 'delete_photo_id' in self.request.POST:
+            photo_id = self.request.POST.get('delete_photo_id')
+            AnnouncementPhoto.objects.filter(id=photo_id, announcement=announcement).delete()
+
+        # Перевірка на видалення відео
+        if 'delete_video' in self.request.POST:
+            announcement.video_file = None
+            announcement.video_url = None
+
+        # Перевірка обмежень на медіа
+        new_video_file = form.cleaned_data.get('video_file')
+        new_video_url = form.cleaned_data.get('video_url')
+        new_image = self.request.FILES.get('image')
+
+        if (announcement.images.exists() or new_image) and (new_video_file or new_video_url):
+            form.add_error(None, 'You cannot have both photos and a video (file or URL) at the same time.')
+            form.cleaned_data['video_file'] = None
+            form.cleaned_data['video_url'] = ''
+            return self.form_invalid(form)
+    
+        if new_video_file and new_video_url:
+            form.add_error(None, 'You cannot provide both a video file and a video URL. Please choose one.')
+            form.cleaned_data['video_file'] = None
+            form.cleaned_data['video_url'] = ''
+            return self.form_invalid(form)
+
+        announcement.edited = True
+        announcement.save()
+
+        # Додавання нового фото, якщо є
+        if new_image:
+            photo_form = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+            if photo_form.is_valid():
+                photo = photo_form.save(commit=False)
+                photo.announcement = announcement
+                photo.save()
+
+        return redirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        # Повертаємо форму з помилками без рекурсії
+        context = self.get_context_data(form=form)
+        context['photo_form'] = AnnouncementPhotoEditForm(self.request.POST, self.request.FILES)
+        context['video_url'] = ''  # Очищаємо URL відео при помилці
+        return self.render_to_response(context)
+
+    def get_success_url(self):
+        return reverse_lazy('main')  # Перенаправлення після редагування
