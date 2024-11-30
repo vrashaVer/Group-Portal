@@ -37,7 +37,7 @@
             {% if item.title %}
                 <div class="announcement">
                     <div class="announcement-header">
-                        <h2>{{ item.title }}</h2>
+           
                         <div class="announcement-menu">
                             <button class="menu-btn-announcement">&#x22EE;</button>  
                             <div class="dropdown-menu-announcement">  
@@ -50,7 +50,7 @@
                         </div> 
                     </div>
                     <h2>{{ item.title }}</h2>
-                    <p>Created by: {{ item.creator }} | {{ item.created_at }}</p>
+                    <p>Created by: {{ item.creator }} </p>
                     <p>{{ item.content }}</p>
 
                     {% if item.video_file %}
@@ -70,9 +70,10 @@
                         {% endif %}
                     {% endif %}
                     {% for image in item.images.all %}
+                        {% if image %}
                     
-                        <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
-                    
+                            <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                        {% endif %}
                    
                     {% endfor %}
 
@@ -123,41 +124,41 @@
                     </div>
                 </div>
             {% elif item.question and item.choices.count > 1 %}
-            <div class="poll">
-                <div class="poll-header">
-                   <h2>{{ item.question }}</h2> 
-                   <div class="poll-menu">
-                    <button class="menu-btn-poll">&#x22EE;</button>  
-                    <div class="dropdown-menu-poll">  
-                        <form method="post" action="{% url 'poll_delete' item.id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
-                        </form>
-                    </div>
-                </div>
-                </div>
-                
-                {% if item.id in user_voted_polls %}
-                    <p>You have already voted. Here are the results:</p>
-                    {% for choice in item.choices.all %}
-                        <p>{{ choice.choice_text }}: {{ choice.votes.count }} votes</p>
-                    {% endfor %}
-                    <p>Total votes: {{ poll_data.total_votes }}</p>
-                {% else %}
-
-                <form method="POST" action="" class="vote-form" data-poll-id="{{ item.id }}">
-                    {% csrf_token %}
-                    {% for choice in item.choices.all %}
-                        <div>
-                            <input type="radio" name="choice_id" value="{{ choice.id }}" id="choice_{{ choice.id }}">
-                            <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                <div class="poll">
+                    <div class="poll-header">
+                    <h2>{{ item.question }}</h2> 
+                    <div class="poll-menu">
+                        <button class="menu-btn-poll">&#x22EE;</button>  
+                        <div class="dropdown-menu-poll">  
+                            <form method="post" action="{% url 'poll_delete' item.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                            </form>
                         </div>
-                    {% endfor %}
-                    <button type="submit">Vote</button>
-                </form>
-                
-                {% endif %}
-            </div>
+                    </div>
+                    </div>
+                    
+                    {% if item.id in user_voted_polls %}
+                        <p>You have already voted. Here are the results:</p>
+                        {% for choice in item.choices.all %}
+                            <p>{{ choice.choice_text }}: {{ choice.votes.count }} votes</p>
+                        {% endfor %}
+                        <p>Total votes: {{ poll_data.total_votes }}</p>
+                    {% else %}
+
+                    <form method="POST" action="" class="vote-form" data-poll-id="{{ item.id }}">
+                        {% csrf_token %}
+                        {% for choice in item.choices.all %}
+                            <div>
+                                <input type="radio" name="choice_id" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                                <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                            </div>
+                        {% endfor %}
+                        <button type="submit">Vote</button>
+                    </form>
+                    
+                    {% endif %}
+                </div>
             {% endif %}
         {% endfor %}
     </div>

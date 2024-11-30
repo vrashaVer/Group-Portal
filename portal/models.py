@@ -21,6 +21,12 @@ class AnnouncementPhoto(models.Model):
     image = models.ImageField(upload_to='post_images/')
     def __str__(self):
         return f"Image for {self.announcement.title}"
+
+    def delete(self, *args, **kwargs):
+        # Перевірка, чи файл фізично існує, і його видалення
+        if self.image and self.image.storage.exists(self.image.name):
+            self.image.delete()
+        super().delete(*args, **kwargs)
     
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -6,9 +6,9 @@
     <div>
         {% if photos %}
             {% for photo in photos %}
-                <div>
+                <div id="photo-{{ photo.id }}">
                     <img src="{{ photo.image.url }}" alt="Photo" style="max-width: 150px;">
-                    <button type="button" onclick="deletePhoto('{{ photo.id }}')">Delete</button>
+                    <button type="button" class="delete-photo-btn" data-id="{{ photo.id }}">Delete</button>
                 </div>
             {% endfor %}
         {% else %}
@@ -20,7 +20,7 @@
     {% if video_url %}
         <p>Video URL: <a href="{{ video_url }}" target="_blank">{{ video_url }}</a></p>
         <input type="hidden" name="delete_video" id="delete_video_input" value="">
-        <button type="button" onclick="deletePhoto('{{ photo.id }}')">Delete</button>
+        <button type="button" class="delete-photo-btn" data-id="{{ photo.id }}">Delete</button>
     {% else %}
         <p>No video available.</p>
     {% endif %}
@@ -38,21 +38,27 @@
         document.getElementById('delete_video_input').value = "1";
     }
 
-    function deletePhoto(photoId) {
-        // Додаємо ID фото до прихованого поля
-        const inputField = document.getElementById('delete_photo_ids');
-        const currentIds = inputField.value ? inputField.value.split(',') : [];
-        if (!currentIds.includes(photoId)) {
-            currentIds.push(photoId);
-        }
-        inputField.value = currentIds.join(',');
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-photo-btn');
+        const deletePhotoIdsInput = document.getElementById('delete_photo_ids');
 
-        // Ховаємо фото на сторінці
-        const photoDiv = document.getElementById(`photo-${photoId}`);
-        if (photoDiv) {
-            photoDiv.style.display = 'none';
-        }
-    }
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const photoId = this.getAttribute('data-id');
 
-   
+                // Додаємо ID фото до списку прихованого поля
+                const existingIds = deletePhotoIdsInput.value ? deletePhotoIdsInput.value.split(',') : [];
+                if (!existingIds.includes(photoId)) {
+                    existingIds.push(photoId);
+                    deletePhotoIdsInput.value = existingIds.join(',');
+                }
+
+                // Ховаємо фото в інтерфейсі
+                const photoDiv = document.getElementById(`photo-${photoId}`);
+                if (photoDiv) {
+                    photoDiv.style.display = 'none';
+                }
+            });
+        });
+    });
 </script>

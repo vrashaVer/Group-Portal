@@ -429,9 +429,12 @@ class EditAnnouncementView(LoginRequiredMixin, UpdateView):
         announcement = form.save(commit=False)
 
         # Видалення фото, якщо вказано
-        if 'delete_photo_ids' in self.request.POST:
-            photo_ids = self.request.POST.get('delete_photo_ids').split(',')
-            AnnouncementPhoto.objects.filter(id__in=photo_ids, announcement=announcement).delete()
+        delete_photo_ids = self.request.POST.get('delete_photo_ids', '')
+        if delete_photo_ids:  # Перевіряємо, чи є передані ID
+            photo_ids = [int(photo_id) for photo_id in delete_photo_ids.split(',') if photo_id.isdigit()]
+            photos_to_delete = AnnouncementPhoto.objects.filter(id__in=photo_ids, announcement=announcement)
+            for photo in photos_to_delete:
+                photo.delete()
 
         # Перевірка на видалення відео
         if 'delete_video' in self.request.POST:
@@ -477,6 +480,19 @@ class EditAnnouncementView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('main')  # Перенаправлення після редагування
+    
+class DeleteAnnouncementPhotoView(LoginRequiredMixin, View):
+    def delete(self, request, *args, **kwargs):
+        photo_id = kwargs.get('photo_id')
+        photo = get_object_or_404(AnnouncementPhoto, id=photo_id)
+
+        # Перевірка, чи користувач має доступ до видалення
+        if photo.announcement.creator != request.user:
+            return JsonResponse({'error': 'Permission denied.'}, status=403)
+
+        # Видалення фото
+        photo.delete()
+        return JsonResponse({'message': 'Photo deleted successfully.'}, status=200)
     
 class CategoryListView(ListView):
     model = ForumCategory

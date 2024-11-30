@@ -38,6 +38,7 @@ urlpatterns = [
     path('register-user/', views.UserRegistrationView.as_view(), name='register_user'),
     path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
     path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
+    path('delete-photo/<int:photo_id>/', views.DeleteAnnouncementPhotoView.as_view(), name='delete_photo'),
 
     ]
 
