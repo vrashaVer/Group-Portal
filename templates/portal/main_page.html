@@ -6,6 +6,9 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'main.css' %}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/plugin/localeData.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+
 
 <aside class="sidebar" style="margin: 0;">
     <div class="sidebar-div">
@@ -20,10 +23,11 @@
 </aside>
 <div class="main-container">
     <div class="search-container">
+   
         <form id="search-form" method="get" action="{% url 'main' %}">
             <input type="text" name="search" id="search-input" placeholder="Пошук опитувань та оголошень..." class="search-bar" value="{{ search }}" oninput="submitSearch()">
         </form>
-
+       
         <div class="post-menu">
             <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
             <div class="dropdown-menu">
@@ -37,20 +41,21 @@
             {% if item.title %}
                 <div class="announcement">
                     <div class="announcement-header">
-           
+                        <div class="announcement-meta">
+                            <p class="author">{{ item.creator }}</p>
+                        </div>
                         <div class="announcement-menu">
                             <button class="menu-btn-announcement">&#x22EE;</button>  
                             <div class="dropdown-menu-announcement">  
-                                <a href="{% url 'edit_announcement' item.id%}">Редагувати</a>
+                                <a href="{% url 'edit_announcement' item.id%} "class="action-btn">Редагувати</a>
                                 <form method="post" action="{% url 'announcement_delete' item.id %}" style="display:inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                                    <button type="submit" class="delete-btn action-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
                                 </form>
                             </div>
                         </div> 
                     </div>
                     <h2>{{ item.title }}</h2>
-                    <p>Created by: {{ item.creator }} </p>
                     <p>{{ item.content }}</p>
 
                     {% if item.video_file %}
@@ -107,7 +112,17 @@
                             {% with comments=comments_by_announcement|get_item:item.id %}
                                 {% if comments %}
                                     {% for comment in comments %}
-                                        <p><strong>{{ comment.user.username }}</strong> ({{ comment.created_at }}): {{ comment.text }}</p>
+                                        <div class="comment {% if comment.user == user %}owner-comment{% endif %}">
+                                            <div class="comment-header">
+                                                <strong>{{ comment.user.username }}</strong>
+                                            </div>
+                                            <div class="comment-text">
+                                                {{ comment.text }}
+                                            </div>
+                                            <div class="comment-time">
+                                                {{ comment.created_at }}
+                                            </div>
+                                        </div>
                                     {% endfor %}
                                 {% else %}
                                     <p>Немає коментарів</p>
@@ -275,8 +290,20 @@
                         success: function(response) {
                             if (response.success) {
                                 response.comments.forEach(comment => {
+                                    const formattedTime = dayjs(comment.created_at).format('MMM D, YYYY, h:mm a');
                                     commentSection.find('.existing-comments').append(
-                                        `<p><strong>${comment.user}</strong> (${comment.created_at}): ${comment.text}</p>`
+                                        `<div class=" comment owner-comment">
+                                            <div class="comment-header">
+                                                <strong>${comment.user}</strong> 
+                                            </div>
+                                            <div class="comment-text">
+                                                ${comment.text}
+                                            </div>
+                                            <div class="comment-time">
+                                                ${ formattedTime }
+                                            </div>
+                                        </div>`
+                                      
                                     );
                                 });
                                 commentSection.data('loaded', true); // Позначаємо коментарі як завантажені

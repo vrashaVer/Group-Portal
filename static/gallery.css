@@ -80,6 +80,7 @@
     height: 300px;      /* Висота однакова для всіх фотографій */
     object-fit: cover;  /* Підлаштовуємо фото по контейнеру, зберігаючи пропорції */
     border-radius: 5px;
+    padding-bottom: 15px;
 }
 
 
@@ -88,6 +89,7 @@
 .single-photo img {
     height: 500px;      /* Для однієї фотографії зробити її більшою */
     object-fit: cover;  /* Підлаштовуємо фото по контейнеру */
+    padding-bottom: 15px;
 }
 
 /* Стилі для порожнього стану */
@@ -153,7 +155,7 @@
 
 .post-date {
     position: absolute;
-    bottom: 10px;   /* Відступ від нижнього краю */
+    bottom: 0;
     right: 10px;    /* Відступ від правого краю */
     font-size: 0.9em;
     color: #777;
