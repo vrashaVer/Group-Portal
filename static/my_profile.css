@@ -1,0 +1,250 @@
+body{
+    background-color: #edecec;
+}
+
+.profile-container {
+    margin: 20px auto;
+    width: 100%; /* Відповідає ширині батьківського контейнера */
+    max-width: 1300px;
+    padding: 0 20px; /* Відступи з боків */
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: left;
+    margin: 30px 0;
+}
+
+.profile-info-container {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px; /* Відступ між блоками */
+    width: 100%; /* Зробити блок на всю ширину */
+    display: flex;
+    flex-direction: column; /* Вертикальне розміщення елементів */
+}
+
+.initials-container {
+    text-align: left; /* Вирівнювання зліва */
+    flex: 0 0 auto; /* Автоматична ширина для квадрата */
+}
+
+.user-icon-profile {
+    width: 150px; /* Збільшення розміру квадрата */
+    height: 150px; /* Збільшення розміру квадрата */
+    border-radius: 8px; /* Квадратна форма для іконки */
+    background-color: #808080; /* Колір фону для іконки */
+    font-size: 48px; /* Збільшення шрифту для ініціалів */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0; /* Відступи для іконки */
+    color: white;
+}
+.profile-photo-pr{
+    width: 150px; /* Розмір квадрата */
+    height: 150px; /* Розмір квадрата */
+    object-fit: cover; /* Масштабування з обрізанням */
+    border-radius: 8px; /* Відповідність заокругленню квадрата */
+}
+
+
+.profile-photo-upload {
+    display: flex;
+    align-items: center; /* Вирівнювання по вертикалі */
+    gap: 20px; /* Відступ між фото і формою */
+}
+
+.upload-photo-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+   
+}
+
+.upload-photo-form input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.upload-photo-form button {
+    padding: 8px 12px;
+    background-color: #6cb0f5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.upload-photo-form button:hover {
+    background-color: #007acc; /* Темніший відтінок блакитного при наведенні */
+}
+
+
+
+
+.divider-line {
+    border-top: 1px solid #ccc; /* Лінія між блоками */
+    width: 100%; /* Ширина лінії на всю ширину */
+    margin: 10px 0; /* Відступи зверху і знизу */
+}
+
+.personal-info-section {
+    margin-top: 20px; /* Відступ для блоку особистої інформації */
+    max-width: 700px; /* Зменшення ширини блоку особистої інформації */
+}
+
+h2 {
+    margin-top: 10px; /* Відступ для заголовка */
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Відступ між рядами */
+}
+
+.info-column {
+    text-align: left;
+    width: 45%; /* Залишити ширину для колонок */
+}
+
+.info-box {
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 5px; /* Відступ для візуального поділу */
+}
+
+.action-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px 0;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+.danger-btn {
+    background-color: #dc3545;
+}
+
+.danger-btn:hover {
+    background-color: #c82333;
+}
+
+.hidden {
+    display: none;
+}
+
+.divider-line {
+    width: 100%;
+    height: 2px;
+    background-color: #ddd;
+    margin: 20px 0;
+}
+
+.color-selection {
+    margin-top: 15px;
+}
+
+.color-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.color-option:hover {
+    border: 2px solid #000;
+}
+
+.color-preview {
+    width: 50px;
+    height: 50px;
+    margin-top: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.color-option.selected {
+    filter: brightness(80%);
+    border: 2px solid #fff; /* Можна додати рамку для підкреслення вибору */
+}
+
+.info-box {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    height: 40px; /* Фіксована висота */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.info-box .info-text {
+    font-size: 16px;
+    color: #333;
+    flex: 1; /* Розтягнути на весь простір */
+    overflow: hidden; /* Якщо текст занадто довгий */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.info-box input {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    width: 100%;
+    display: none; /* Сховати поле за замовчуванням */
+    box-sizing: border-box; /* Урахувати padding у ширину */
+    height: 100%; /* Зробити висоту рівною контейнеру */
+}

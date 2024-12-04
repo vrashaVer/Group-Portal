@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, Vote
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, ProfilePhoto, ProfileColor
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
@@ -116,3 +116,9 @@ class AnnouncementPhotoForm(forms.ModelForm):
     class Meta:
         model = AnnouncementPhoto
         fields = ['image']
+
+
+class ProfilePhotoForm(forms.ModelForm):
+    class Meta:
+        model = ProfilePhoto
+        fields = ['photo']

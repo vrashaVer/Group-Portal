@@ -1,5 +1,7 @@
 from django.contrib import admin
 from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost, Event, ForumCategory, ForumPost,Role,UserRole, ProfileType
+from portal.models import ProfilePhoto, ProfileColor
+
 
 admin.site.register(Announcement)
 admin.site.register(AnnouncementPhoto)
@@ -26,3 +28,11 @@ class UserRoleAdmin(admin.ModelAdmin):
 @admin.register(ProfileType)
 class ProfileTypeAdmin(admin.ModelAdmin):
     list_display = ('user', 'user_type')
+
+@admin.register(ProfilePhoto)
+class ProfilePhotoAdmin(admin.ModelAdmin):
+    list_display = ['user', 'photo']
+
+@admin.register(ProfileColor)
+class ProfileColorAdmin(admin.ModelAdmin):
+    list_display = ['user', 'color']

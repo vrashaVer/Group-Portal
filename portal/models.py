@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey,GenericRelation
+import random
 
 class Announcement(models.Model):
     title = models.CharField(max_length=100)
@@ -146,3 +147,24 @@ class ProfileType(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.get_user_type_display()}"
+
+
+class ProfilePhoto(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True) 
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile Photo"
+    
+
+
+def assign_default_color():
+    colors = ["#95b6bd", "#93baaf", "#ffffb3", "#ffd4df", "#fcc386", "#a6e3c4", "#b7bac9", "#c4f8ff", "#9ed8ff", "#cfc1d9"]
+    return random.choice(colors)
+
+class ProfileColor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile_color')
+    color = models.CharField(max_length=7, default=assign_default_color)  
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile Color"

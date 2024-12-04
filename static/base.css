@@ -177,3 +177,10 @@ footer {
     text-align: center;
    
 }
+
+.profile-photo {
+    width: 40px; /* Ширина квадрата */
+    height: 40px; /* Висота квадрата */
+    object-fit: cover; /* Масштабування, щоб повністю заповнити квадрат */
+    border-radius: 5px; /* Така ж закругленість, як у .user-icon */
+}

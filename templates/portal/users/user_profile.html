@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'profile.css' %}">
+<link rel="stylesheet" href="{% static 'my_profile.css' %}">
 
 
 <div class="profile-container">
@@ -11,34 +11,379 @@
         <div class="profile-photo-upload">
             <div class="initials-container">
                 <p><strong>Profile Photo</strong></p>
-            </div>  
+                {% if profile_photo and profile_photo.photo %}
+                <img src="{{ profile_photo.photo.url }}?{{ profile_photo.updated_at }}" alt="Profile Photo" class="profile-photo-pr">
+                {% else %}
+                    <div class="user-icon-profile" style="background-color: {{ user.profile_color.color|default:'#cccccc' }};">
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }} <!-- Ініціали -->
+                        {% else %}
+                            {{ user.username|slice:":1" }} <!-- Перша літера логіна -->
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <button id="edit-photo-btn" class="action-btn">Edit Photo</button>
+            <div id="photo-edit-menu" class="hidden">
+                <form id="profile-photo-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="photo" id="photo-input">
+                    <button type="submit" class="action-btn">Upload Photo</button>
+                </form>
+                <button id="delete-photo-btn" class="action-btn danger-btn">Delete Photo</button>
+
+                <div class="color-selection">
+                    <h3>Select Profile Color</h3>
+                    <div class="color-options">
+                        {% for color in available_colors %}
+                            <div 
+                                class="color-option" 
+                                data-color="{{ color }}" 
+                                style="background-color: {{ color }};">
+                            </div>
+                        {% endfor %}
+                        <button id="save-color-btn" class="action-btn">Save Color</button>
+                    </div>
+                </div>
+            </div>
+
         </div>  
         <div class="divider-line"></div> <!-- Лінія між блоками -->
 
         <div class="personal-info-section">
             <h2>Personal Information</h2>
-            <div class="info-row">
-                <div class="info-column">
-                    <p><strong>First Name:</strong></p>
-                    <div class="info-box">{{ user.first_name|default:"-" }}</div>
+            <form id="edit-user-form" method="POST">
+                {% csrf_token %}
+                <div class="info-row">
+                    <div class="info-column">
+                        <p><strong>First Name:</strong></p>
+                        <div class="info-box">
+                            <span class="info-text" id="first-name-text">{{ user.first_name|default:"-" }}</span>
+                            <input type="text" name="first_name" id="first-name-input" 
+                                value="{{ user.first_name|default:'' }}" class="hidden">
+                        </div>
+                    </div>
+                    <div class="info-column">
+                        <p><strong>Last Name:</strong></p>
+                        <div class="info-box">
+                            <span class="info-text" id="last-name-text">{{ user.last_name|default:"-" }}</span>
+                            <input type="text" name="last_name" id="last-name-input" 
+                                value="{{ user.last_name|default:'' }}" class="hidden">
+                        </div>
+                    </div>
                 </div>
-                <div class="info-column">
-                    <p><strong>Last Name:</strong></p>
-                    <div class="info-box">{{ user.last_name|default:"-" }}</div>
+                <div class="info-row">
+                    <div class="info-column">
+                        <p><strong>Email:</strong></p>
+                        <div class="info-box">
+                            <span class="info-text" id="email-text">{{ user.email|default:"-" }}</span>
+                            <input type="email" name="email" id="email-input" 
+                                value="{{ user.email|default:'' }}" class="hidden">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="info-row">
-                <div class="info-column">
-                    <p><strong>Email:</strong></p>
-                    <div class="info-box">{{ user.email }}</div>
-                </div>
-                <div class="info-column">
-                    <p><strong>Username:</strong></p>
-                    <div class="info-box">{{ user.username }}</div>
-                </div>
-            </div>
+                <button type="button" id="edit-user-btn" class="action-btn">Edit</button>
+                <button type="submit" id="save-user-btn" class="action-btn hidden">Save</button>
+                <button type="button" id="cancel-user-btn" class="action-btn hidden">Cancel</button>
+            </form>
+            
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('edit-photo-btn').addEventListener('click', function() {
+        document.getElementById('photo-edit-menu').classList.toggle('hidden');
+    });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButton = document.getElementById("edit-user-btn");
+        const saveButton = document.getElementById("save-user-btn");
+        const cancelButton = document.getElementById("cancel-user-btn");
+        const infoBoxes = document.querySelectorAll(".info-box");
+
+        // Збереження початкових значень
+        const originalValues = {};
+        infoBoxes.forEach((box) => {
+            const input = box.querySelector("input");
+            if (input) {
+                originalValues[input.name] = input.value;
+            }
+        });
+
+        // Активація режиму редагування
+        function activateEditMode() {
+            infoBoxes.forEach((box) => {
+                const textElement = box.querySelector(".info-text");
+                const inputElement = box.querySelector("input");
+
+                if (textElement && inputElement) {
+                    textElement.style.display = "none";
+                    inputElement.style.display = "block";
+                }
+            });
+
+            editButton.classList.add("hidden");
+            saveButton.classList.remove("hidden");
+            cancelButton.classList.remove("hidden");
+        }
+
+        // Скасування змін
+        function cancelEditMode() {
+            infoBoxes.forEach((box) => {
+                const textElement = box.querySelector(".info-text");
+                const inputElement = box.querySelector("input");
+
+                if (textElement && inputElement) {
+                    textElement.style.display = "block";
+                    inputElement.style.display = "none";
+                    inputElement.value = originalValues[inputElement.name]; // Відновлення початкових значень
+                }
+            });
+
+            editButton.classList.remove("hidden");
+            saveButton.classList.add("hidden");
+            cancelButton.classList.add("hidden");
+        }
+
+        // Збереження змін
+        function saveChanges(event) {
+            event.preventDefault(); // Заборонити стандартну поведінку форми
+
+            const formData = {};
+            infoBoxes.forEach((box) => {
+                const inputElement = box.querySelector("input");
+                if (inputElement) {
+                    formData[inputElement.name] = inputElement.value;
+                }
+            });
+
+            // Надсилання AJAX-запиту
+            fetch("/user_profile/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+                body: JSON.stringify(formData),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        infoBoxes.forEach((box) => {
+                            const textElement = box.querySelector(".info-text");
+                            const inputElement = box.querySelector("input");
+
+                            if (textElement && inputElement) {
+                                textElement.textContent = inputElement.value;
+                                textElement.style.display = "block";
+                                inputElement.style.display = "none";
+                            }
+                        });
+
+                        editButton.classList.remove("hidden");
+                        saveButton.classList.add("hidden");
+                        cancelButton.classList.add("hidden");
+                    } else {
+                        alert(data.message || "Error updating profile");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An error occurred while saving changes.");
+                });
+        }
+
+        // Прив'язка подій
+        editButton.addEventListener("click", activateEditMode);
+        cancelButton.addEventListener("click", cancelEditMode);
+        saveButton.addEventListener("click", saveChanges);
+    });
+
+
+
+
+
+
+    document.getElementById('save-color-btn').addEventListener('click', function() {
+        event.preventDefault(); 
+        const selectedColor = document.querySelector('.color-option.selected');
+        
+        if (selectedColor) {
+            const color = selectedColor.getAttribute('data-color');
+            
+            fetch('/profile/', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ color: color })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Видалення фото, якщо воно є
+                    const photoElement = document.querySelector('.profile-photo-pr');
+                    if (photoElement) {
+                        photoElement.remove();
+                    }
+
+                    // Додавання/оновлення квадрата з кольором
+                    let colorContainer = document.querySelector('.user-icon-profile');
+                    if (!colorContainer) {
+                        colorContainer = document.createElement('div');
+                        colorContainer.classList.add('user-icon-profile');
+                        const initialsContainer = document.querySelector('.initials-container');
+                        initialsContainer.appendChild(colorContainer);
+                    }
+
+                    // Застосування нового кольору до квадрата
+                    colorContainer.style.backgroundColor = color;
+
+                    // Оновлення ініціалів або імені користувача
+                    const initialsContent = `
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                        {% else %}
+                            {{ user.username|slice:":1" }}
+                        {% endif %}
+                    `;
+                    colorContainer.innerHTML = initialsContent;
+
+                    alert('Color updated successfully!');
+                } else {
+                    alert('Error updating color!');
+                }
+            });
+        } else {
+            alert('Please select a color first!');
+        }
+    });
+
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    // Додавання фото
+    document.getElementById('profile-photo-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Зупиняє стандартну поведінку форми
+
+        const fileInput = document.getElementById('photo-input');
+        
+        if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a photo before uploading.'); // Повідомлення користувачу
+        return; // Зупинити виконання, якщо файл не обрано
+    }
+
+        const formData = new FormData(this); // Збирає всі дані з форми
+        
+
+        fetch("{% url 'user_profile' %}", { // Замініть 'user_profile' на вашу URL-іменну
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // Додайте CSRF-токен
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Видалити елемент з ініціалами, якщо він існує
+                const initialsElement = document.querySelector('.user-icon-profile');
+                if (initialsElement) {
+                    initialsElement.remove();
+                }
+
+                // Перевірити, чи вже є фото
+                let photoElement = document.querySelector('.profile-photo-pr');
+                if (photoElement) {
+                    // Оновити URL існуючого фото
+                    photoElement.src = data.new_photo_url + '?' + new Date().getTime(); // Уникнення кешування
+                } else {
+                    // Якщо фото ще немає, створити його
+                    const container = document.querySelector('.initials-container');
+                    const img = document.createElement('img');
+                    img.src = data.new_photo_url + '?' + new Date().getTime();
+                    img.alt = "Profile Photo";
+                    img.classList.add('profile-photo-pr');
+                    container.appendChild(img);
+                }
+                fileInput.value = '';
+                alert('Photo updated successfully!');
+            } else {
+                alert(data.message || 'Error updating photo');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the photo.');
+        });
+    });
+
+    document.getElementById('delete-photo-btn').addEventListener('click', function () {
+        if (confirm('Are you sure you want to delete your profile photo?')) {
+            fetch("{% url 'user_profile' %}", {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Видалення існуючого елементу з фото
+                    const photoElement = document.querySelector('.profile-photo-pr');
+                    if (photoElement) {
+                        photoElement.remove();
+                    }
+
+                    // Додавання квадрата з кольором
+                    let initialsContainer = document.querySelector('.initials-container');
+                    let colorBlock = document.querySelector('.user-icon-profile');
+
+                    if (!colorBlock) {
+                        // Створення нового елементу
+                        colorBlock = document.createElement('div');
+                        colorBlock.classList.add('user-icon-profile');
+                        initialsContainer.appendChild(colorBlock);
+                    }
+
+                    // Встановлення кольору та тексту
+                    colorBlock.style.backgroundColor = "{{ user.profile_color.color|default:'#cccccc' }}";
+                    colorBlock.textContent = `
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                        {% else %}
+                            {{ user.username|slice:":1" }}
+                        {% endif %}
+                    `.trim();
+
+                    alert(data.message || 'Photo deleted successfully!');
+                } else {
+                    alert(data.message || 'Error deleting photo.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the photo.');
+            });
+        }
+    });
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 {% endblock %}

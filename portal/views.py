@@ -5,9 +5,10 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
 from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, Event, ForumCategory, ForumPost, Role, UserRole, ProfileType
+from .models import ProfileColor, ProfilePhoto
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,AnnouncementPhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,ProfilePhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
@@ -17,7 +18,9 @@ import re
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
 
 class MainPageView(LoginRequiredMixin, ListView):
     template_name = 'portal/main_page.html'
@@ -775,14 +778,99 @@ class UserProfileView(LoginRequiredMixin, View):
 
     def get(self, request):
         
+        profile_photo = ProfilePhoto.objects.filter(user=request.user).first()
+        profile_color = ProfileColor.objects.filter(user=request.user).first()
+        available_colors = ["#95b6bd", "#93baaf", "#ffffb3", "#ffd4df", "#fcc386", 
+                        "#a6e3c4", "#b7bac9", "#c4f8ff", "#9ed8ff", "#cfc1d9"]
+
         context = {
-            'user': request.user, 
+            'profile_photo': profile_photo,
+            'profile_color': profile_color.color if profile_color else '#cccccc',
+            'user': request.user,
+            'form': ProfilePhotoForm(),
+            'available_colors': available_colors,
         }
         return render(request, self.template_name, context)
+    
+    def post(self, request):
+        if 'photo' in request.FILES:
+            profile_photo, created = ProfilePhoto.objects.get_or_create(user=request.user)
+            form = ProfilePhotoForm(request.POST, request.FILES, instance=profile_photo)
+
+            if form.is_valid():
+                form.save()
+                # Повернення URL завантаженого фото
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Photo updated successfully',
+                    'new_photo_url': profile_photo.photo.url
+                })
+
+            return JsonResponse({'success': False, 'message': 'Error updating photo'})
+        elif 'first_name' in request.POST or 'last_name' in request.POST or 'email' in request.POST:
+            user = request.user
+            user.first_name = request.POST.get('first_name', user.first_name)
+            user.last_name = request.POST.get('last_name', user.last_name)
+            user.email = request.POST.get('email', user.email)
+            user.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'User information updated successfully'
+            }, status=200)
+        elif request.is_ajax() and request.method == "POST":
+            try:
+                data = json.loads(request.body.decode('utf-8'))
+                user = request.user
+
+                # Оновлення даних користувача
+                user.first_name = request.POST.get('first_name') or user.first_name
+                user.last_name = request.POST.get('last_name') or user.last_name
+                user.email = request.POST.get('email') or user.email
+
+                user.save()
+
+                return JsonResponse({"success": True, "message": "User information updated successfully"})
+
+            except Exception as e:
+                return JsonResponse({"success": False, "message": str(e)}, status=400)
+
+        # Інший випадок
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+    @method_decorator(csrf_exempt)
+    def delete(self, request):
+        # Видалення фотографії
+        profile_photo = ProfilePhoto.objects.filter(user=request.user).first()
+        if profile_photo and profile_photo.photo:
+            profile_photo.photo.delete()
+            profile_photo.delete()
+            return JsonResponse({'success': True, 'message': 'Photo deleted successfully'})
+        return JsonResponse({'success': False, 'message': 'No photo to delete'})
+
+    def put(self, request):
+        data = json.loads(request.body)
+        new_color = data.get('color')
+        if new_color:
+            # Видалення існуючого фото
+            profile_photo = ProfilePhoto.objects.filter(user=request.user).first()
+            if profile_photo and profile_photo.photo:
+                profile_photo.photo.delete()  # Видаляє файл з файлової системи
+                profile_photo.delete()  # Видаляє запис з бази даних
+
+            # Оновлення кольору профілю
+            profile_color, created = ProfileColor.objects.get_or_create(user=request.user)
+            profile_color.color = new_color
+            profile_color.save()
+
+            return JsonResponse({'success': True, 'message': 'Color updated successfully and photo removed.'})
+        return JsonResponse({'success': False, 'message': 'Color update failed.'})
 
 
 
-class UserProfileView(DetailView):
+
+
+class AnUserProfileView(DetailView):
     model = User
     template_name = 'portal/users/an_user_profile.html'
     context_object_name = 'user_profile'
@@ -792,6 +880,7 @@ class UserProfileView(DetailView):
         # Отримуємо тип профілю (якщо використовується модель `ProfileType`)
         context['profile_type'] = ProfileType.objects.filter(user=self.object).first()
         return context
+
     
 class UserRegistrationView(View):
     template_name = 'portal/registration/register_user.html'
@@ -832,6 +921,8 @@ class UserRegistrationView(View):
             # Додати тип профілю
             user_type = form.cleaned_data['user_type']
             ProfileType.objects.create(user=user, user_type=user_type)
+
+            ProfileColor.objects.create(user=user)
 
             return redirect('user_list')  # Повернення до списку користувачів
 

@@ -11,7 +11,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
     // Отримуємо елемент значка користувача
-    const userIcon = document.querySelector(".profile-link");
+    const userIcon = document.querySelector(".user-menu");
     // Отримуємо елемент випадаючого меню
     const dropdownContent = document.getElementById("dropdown");
 
@@ -52,15 +52,66 @@
                     <a href="{% url 'user_list'%}">Учасники</a>
                 </nav>
                 <div class="user-menu">
-                    <p class="profile-link">User</a>
+               
+                    {% if profile_photo %}
+                        <img src="{{ profile_photo.photo.url }}" alt="Profile Photo" class="profile-photo" style="width: 50px; /* Ширина квадрата */
+                        height: 50px; /* Висота квадрата */
+                        object-fit: cover; /* Масштабування, щоб повністю заповнити квадрат */
+                        border-radius:  50%;; /* Така ж закругленість, як у .user-icon */">
+                    {% else %}
+                        <div class="user-icon" style="background-color: {{ user.profile_color.color|default:'#cccccc' }}; 
+                                                    color: #fff; 
+                                                    display: flex; 
+                                                    justify-content: center; 
+                                                    align-items: center; 
+                                                    font-size: 20px; 
+                                                    width: 50px; 
+                                                    height: 50px; 
+                                                    border-radius: 50%;">
+                            {% if user.first_name and user.last_name %}
+                                {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                            {% else %}
+                                {{ user.username|slice:":1" }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
                 
                 <div class="dropdown-content" id="dropdown">
                     <div class="dropdown-section">
                         
+                        <div class="user-icon-large">
+                            {% if profile_photo %}
+                                <img src="{{ profile_photo.photo.url }}" alt="Profile Photo" class="profile-photo-menu"style="width: 80px; /* Ширина квадрата */
+                                height: 80px; /* Висота квадрата */
+                                object-fit: cover; /* Масштабування, щоб повністю заповнити квадрат */
+                                border-radius: 5px;
+                                display: flex; 
+                                justify-content: center; 
+                                align-items: center; 
+                                margin: 0 auto;">
+                            {% else %}
+                                <div class="user-icon-large" style="background-color: {{ user.profile_color.color|default:'#cccccc' }}; 
+                                                            color: #fff; 
+                                                            display: flex; 
+                                                            justify-content: center; 
+                                                            align-items: center; 
+                                                            font-size: 20px; 
+                                                            width: 80px; 
+                                                            height: 80px;
+                                                            margin: 0 auto;
+                                                            margin-bottom: 10px;
+                                                            border-radius: 5px;">
+                                    {% if user.first_name and user.last_name %}
+                                        {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                                    {% else %}
+                                        {{ user.username|slice:":1" }}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
                         
-                        
-                        <div class="user-name-menu"> <!-- Додаємо клас для стилізації -->
+                        <div class="user-name-menu" > <!-- Додаємо клас для стилізації -->
                             {% if user.first_name and user.last_name %}
                                 {{ user.first_name }} {{ user.last_name }} <!-- Відображення імені та прізвища -->
                             {% else %}
