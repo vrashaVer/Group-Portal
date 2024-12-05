@@ -1,8 +1,19 @@
-<h1>Редагувати категорію</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зберегти зміни</button>
-</form>
+{% load static %}
 
-<a href="{% url 'category_list' %}">Назад до списку категорій</a>
+
+<link rel="stylesheet" href="{% static 'edit_category.css' %}">
+
+
+<div class="edit-category-container">
+
+    <h1>Редагувати категорію</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit">Зберегти зміни</button>
+    </form>
+
+    <a href="{% url 'category_list' %}" class="back-link">Back to Categories</a>
+
+</div>

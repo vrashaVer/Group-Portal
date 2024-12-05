@@ -1,39 +1,53 @@
-<h1>{{ object.title }}</h1>
-<p>{{ object.text }}</p>
+{% extends 'base.html' %}
 
-{% if object.image %}
-    <img src="{{ object.image.url }}" alt="Post Image">
-{% endif %}
+{% load static %}
+{% load has_permission %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'forum_post_detail.css' %}">
 
-{% if object.video %}
-    <video controls>
-        <source src="{{ object.video.url }}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-{% endif %}
-<a href="{% url 'edit_forum_post' object.id %}" class="edit-link">Редагувати</a>
-<a href="{% url 'forum_post_list' object.category.id %}" class="back-link">Назад</a>
 
-<div class="comments-list" id="comments-list">
-    {% for comment in comments %}
-        <div class="comment-block {% if comment.user == request.user %}current-user{% endif %}">
-            <div class="comment-header">
-                <span class="comment-author">{{ comment.user.username }}</span>
-                <span class="comment-date">{{ comment.created_at|date:"d M Y H:i" }}</span>
+<div class="main-container">
+    <div class="header-container">
+        <a href="{% url 'forum_post_list' object.category.id  %}" class="back-btn">&#8592; Назад</a>
+        
+        <a href="{% url 'edit_forum_post' object.id %}" class="edit-link">Редагувати</a>
+    </div>
+    <h1>{{ object.title }}</h1>
+    <p>{{ object.text }}</p>
+    <div class="media-container">
+        {% if object.image %}
+            <img src="{{ object.image.url }}" alt="Post Image">
+        {% endif %}
+
+        {% if object.video %}
+            <video controls>
+                <source src="{{ object.video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        {% endif %}
+    </div>
+    
+    <div class="comments-list" id="comments-list">
+        {% for comment in comments %}
+            <div class="comment-block {% if comment.user == request.user %}current-user{% endif %}">
+                <div class="comment-header">
+                    <span class="comment-author">{{ comment.user.username }}</span>
+                    <span class="comment-date">{{ comment.created_at|date:"d M Y H:i" }}</span>
+                </div>
+                <p class="comment-text">{{ comment.text }}</p>
             </div>
-            <p class="comment-text">{{ comment.text }}</p>
-        </div>
-    {% empty %}
-        <p>No comments yet.</p>
-    {% endfor %}
-</div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
 
-<div class="comment-form-container">
-    <form id="comment-form" method="post" action="{% url 'add_comment' object.id %}" class="comment-form">
-        {% csrf_token %}
-        <textarea id="comment-textarea" name="text" placeholder="Write your comment here..." required></textarea>
-        <button type="submit" class="btn">Submit</button>
-    </form>
+    <div class="comment-form-container">
+        <form id="comment-form" method="post" action="{% url 'add_comment' object.id %}" class="comment-form">
+            {% csrf_token %}
+            <textarea id="comment-textarea" name="text" placeholder="Write your comment here..." required></textarea>
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -131,3 +145,8 @@
     });
 
 </script>
+
+
+
+
+{% endblock %}

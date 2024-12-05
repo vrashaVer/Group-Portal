@@ -1,7 +1,18 @@
+
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'add_forum_post.css' %}">
+
 <h1>Додати новий пост до категорії "{{ category.name }}"</h1>
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" class="add-post-form">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Опублікувати</button>
-    <a href="{% url 'forum_post_list' category.id %}" class="btn btn-secondary">Назад</a>
+
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Опублікувати</button>
+        <a href="{% url 'forum_post_list' category.id %}" class="btn btn-secondary">Назад</a>
+    </div>
 </form>

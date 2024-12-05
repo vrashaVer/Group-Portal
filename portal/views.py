@@ -657,6 +657,13 @@ class ForumPostCreateView(LoginRequiredMixin, CreateView):
         category = get_object_or_404(ForumCategory, pk=self.kwargs['category_id'])
         form.instance.category = category  # Прив’язуємо пост до категорії
         form.instance.author = self.request.user  # Додаємо автора
+        if ForumPost.objects.filter(title=form.instance.title, category=category).exists():
+            # Якщо пост з такою назвою вже існує, викидаємо помилку, але не редиректимо
+            form.add_error('title', 'Пост з такою назвою вже існує в цій категорії.')
+
+            # Повертаємо false, щоб не відбувався submit форми
+            return self.render_to_response(self.get_context_data(form=form))
+
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

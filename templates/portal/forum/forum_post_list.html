@@ -1,23 +1,82 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load has_permission %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'forum_post_list.css' %}">
 
 
-<h1>Posts in Category</h1>
-<a href="{% url 'add_forum_post' category_id %}" class="btn btn-success">Додати новий пост</a>
-{% if forum_posts %}
-    <ul>
-        {% for post in forum_posts %}
-            <li>
-                <a href="{% url 'forum_post_detail' post.id %}">{{ post.title }}</a>
-                <form method="post" action="{% url 'delete_forum_post' post.id %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
-                </form>
-                <a href="{% url 'edit_forum_post' post.id %}?next={{ request.get_full_path }}">Редагувати</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No posts available in this category.</p>
-{% endif %}
-<a href="{% url 'category_list'  %}" class="back-link">Назад</a>
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery'%}">Галерея</a>
+            <a href="{% url 'event_list'%}">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+
+    
+</aside>
+
+<div class="main-container">
+
+    <div class="header-container">
+        <a href="{% url 'category_list' %}" class="back-btn">&#8592; Назад</a>
+        <h1 class="page-title">Пости</h1>
+    </div>
+    
+   
+    {% if request.user|has_permission:user %}
+        <a href="{% url 'add_forum_post' category_id %}" class="add-forum-post-btn">Додати новий пост</a>
+    {% endif %}
+
+    <h1>Пости</h1>
+    {% if forum_posts %}
+            {% for post in forum_posts %}
+                <div class="forum-post">
+                    <a href="{% url 'forum_post_detail' post.id %}">{{ post.title }}</a>
+                    <div class="post-menu">
+                        <button class="menu-btn-forum">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                        <div class="dropdown-menu">
+                            <a href="{% url 'edit_forum_post' post.id %}?next={{ request.get_full_path }}">Редагувати</a>
+                            <form method="post" action="{% url 'delete_forum_post' post.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
+                            </form>
+                        </div>
+                    </div>
 
 
+                </div>
+            {% endfor %}
+     
+    {% else %}
+        <p>No posts available in this category.</p>
+    {% endif %}
+
+
+</div>
+<script>
+    document.querySelectorAll('.menu-btn-forum').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();  // Запобігає закриттю меню при кліку на саму кнопку
+            const menu = this.closest('.post-menu');  // Знаходимо найближчий батьківський елемент з класом .post-menu
+            menu.classList.toggle('active'); // Додаємо/вилучаємо клас 'active' для елемента .post-menu
+        });
+    });
+
+    // Закриття меню при кліку поза його межами
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.post-menu')) {
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.classList.remove('active');  // Видаляємо клас 'active', щоб приховати меню
+            });
+        }
+    });
+  
+</script>
+
+
+
+{% endblock %}

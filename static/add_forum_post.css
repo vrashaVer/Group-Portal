@@ -1,0 +1,90 @@
+/* Основні стилі для сторінки додавання посту */
+.add-post-form {
+    max-width: 800px; /* Максимальна ширина форми */
+    margin: 20px auto; /* Центрування форми */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px; /* Заокруглені краї */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тінь для форми */
+}
+
+/* Стиль для заголовка */
+.add-post-form h1 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Кожне поле форми */
+.add-post-form .form-group {
+    margin-bottom: 20px; /* Відступ між полями */
+}
+
+.add-post-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Кнопки */
+.add-post-form .form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; /* Відстань між кнопками */
+}
+
+.add-post-form .btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-post-form .btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.add-post-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.add-post-form .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.add-post-form .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Стилі для поля вводу та текстових полів */
+.add-post-form input[type="text"], 
+.add-post-form textarea, 
+.add-post-form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+.add-post-form input[type="file"] {
+    padding: 5px;
+}
+
+/* Спеціальний стиль для текстового поля */
+.add-post-form textarea {
+    height: 150px; /* Висота для текстового поля */
+    resize: vertical; /* Дозволяємо змінювати розмір */
+}
+
+

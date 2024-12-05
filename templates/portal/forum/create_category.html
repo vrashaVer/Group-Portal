@@ -1,7 +1,16 @@
-<h1>Create a New Forum Category</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Category</button>
-    
-</form>
+
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'add_category.css' %}">
+
+
+<div class="create-category-container">
+    <h1>Create a New Forum Category</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Category</button>
+    </form>
+    <a href="{% url 'category_list' %}" class="back-link">Back to Categories</a>
+</div>

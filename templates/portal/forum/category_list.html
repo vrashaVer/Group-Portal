@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% load static %}
-{% load video_filters %}
+{% load has_permission %}
 {% block content %}
+
 <link rel="stylesheet" href="{% static 'category_list.css' %}">
 
 
@@ -19,24 +20,54 @@
 </aside>
 
 <div class="main-container">
-    <a href="{% url 'create_category' %}">Create New Category</a>
-    <h1>Forum Categories</h1>
-    <ul>
+    <h1>Категорії форума:</h1>
+    {% if request.user|has_permission:user %}
+        <a href="{% url 'create_category' %}" class="add-category-btn">Додати Категорію</a>
+    {% endif %}
+    
+    
         {% for category in categories %}
         <div class="category">
-            <li>
+            
                 <a href="{% url 'forum_post_list' category.id %}">{{ category.name }}</a>
-                <form method="post" action="{% url 'delete_forum_category' category.id %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
-                </form>
-                <a href="{% url 'edit_category' category.id %}" class="edit-link">Редагувати</a>
-            </li>
+                <div class="post-menu">
+                    <button class="menu-btn-category">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                    <div class="dropdown-menu">
+                        <a href="{% url 'edit_category' category.id %}">Редагувати</a>
+                        <form method="post" action="{% url 'delete_forum_category' category.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
+                        </form>
+                    </div>
+                </div>
+                
+        </div>  
         {% endfor %}
-        </div>
-    </ul>
+        
+    
 </div>
+<script>
+    document.querySelectorAll('.menu-btn-category').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();  // Запобігає закриттю меню при кліку на саму кнопку
+            const menu = this.closest('.post-menu');  // Знаходимо найближчий батьківський елемент з класом .post-menu
+            menu.classList.toggle('active'); // Додаємо/вилучаємо клас 'active' для елемента .post-menu
+        });
+    });
 
+    // Закриття меню при кліку поза його межами
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.post-menu')) {
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.classList.remove('active');  // Видаляємо клас 'active', щоб приховати меню
+            });
+        }
+    });
+  
+</script>
 {% endblock %}
+
+
+
 
 

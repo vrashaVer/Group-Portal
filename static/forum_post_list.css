@@ -1,0 +1,392 @@
+/* Sidebar */
+.sidebar-div{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar {
+    padding-top: 20px;
+    width: 230px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+   
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+
+
+.main-container {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 30px;
+
+}
+
+/* Sidebar */
+.sidebar-div {
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+}
+
+.sidebar {
+    padding-top: 20px;
+    width: 230px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+
+/* Main Container */
+.main-container {
+    /* Стилі для секції коментарів */
+.comments-section {
+    margin-top: 20px;
+    border-top: 1px solid #ccc; /* Рамка зверху секції коментарів */
+    padding-top: 10px;
+}
+
+.comments-list {
+    max-height: 300px; /* Максимальна висота для прокрутки */
+    overflow-y: auto; /* Дозволити вертикальну прокрутку */
+    margin-bottom: 20px; /* Відступ знизу */
+    margin-top: 30px;
+    border: 1px solid #ccc; /* Рамка навколо списку коментарів */
+    border-radius: 5px; /* Закруглені кути */
+    padding: 10px; /* Відступ всередині */
+    background-color: #f9f9f9; /* Світлий фон для контрасту */
+}
+
+.comment-block {
+    background-color: #f9f9f9; /* Світло-сірий фон для коментаря */
+    border: 1px solid #ddd; /* Рамка коментаря */
+    border-radius: 5px; /* Заокруглення кутів */
+    padding: 5px; /* Зменшений внутрішній відступ */
+    margin-bottom: 10px;
+    position: relative; /* Для абсолютного позиціювання дати */
+    font-size: 0.9em; /* Менший шрифт для тексту коментаря */
+}
+
+.current-user {
+    background-color: #e0f7fa; /* Світло-блакитний фон для коментарів поточного користувача */
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between; /* Розміщення автора і дати */
+    margin-bottom: 3px; /* Зменшена відстань між заголовком і текстом коментаря */
+}
+
+.comment-author {
+    font-weight: bold; /* Товстий шрифт для автора */
+}
+
+.comment-date {
+    font-size: 0.8em; /* Менший шрифт для дати */
+    color: #888; /* Сірий колір для дати */
+}
+
+.comment-form-container {
+    margin-top: 20px; /* Відстань перед формою коментаря */
+}
+
+.comment-form textarea {
+    width: 100%; /* Зробити текстове поле на всю ширину */
+    height: 30px; /* Встановити висоту для одного рядка */
+    resize: none; /* Вимкнути можливість ручного зміщення розміру */
+    overflow: hidden; /* Сховати прокрутку */
+    padding: 5px; /* Додати відступи */
+    border: 1px solid #ccc; /* Додати рамку */
+    border-radius: 5px; /* Закруглені кути */
+    font-size: 14px; /* Встановити розмір шрифту */
+}
+
+/* Додаємо правило для автоматичного розширення текстового поля */
+.comment-form textarea:focus {
+    overflow-y: hidden; /* Сховати скролл при фокусуванні */
+    height: auto; /* Скинути висоту для автоматичного підрахунку */
+    /* Підрахунок висоти на основі змісту */
+    height: calc(1.5em + 0.5rem); /* Додати базову висоту */
+    transition: height 0.2s ease; /* Анімація зміни висоти */
+}
+
+.comment-form .btn {
+    background-color: #007bff; /* Синій фон для кнопки */
+    color: white; /* Білий текст для кнопки */
+    padding: 5px 10px; /* Зменшений внутрішній відступ для кнопки */
+    border: none; /* Без рамки */
+    border-radius: 5px; /* Заокруглення кутів */
+    cursor: pointer; /* Курсор у вигляді руки */
+    font-size: 0.9em; /* Менший шрифт для кнопки */
+}
+
+.comment-form .btn:hover {
+    background-color: #0056b3; /* Темніший колір при наведенні */
+}
+
+
+
+
+h1 {
+    font-size: 2.5rem;
+    color: #0056b3;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.media-container {
+    display: flex;
+    flex-direction: column; /* Елементи розташовуються у стовпчик */
+    gap: 1rem; /* Відступи між елементами */
+}
+
+.media-container img,
+.media-container video {
+    max-width: 100%; /* Пропорційне масштабування */
+    width: auto;
+    height: auto;
+}
+
+a.edit-link {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 10px 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    color: white;
+    background-color: #0056b3;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+a.edit-link:hover {
+    background-color: #003d7a;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column; /* Елементи у стовпчик */
+    gap: 1rem; /* Відстань між елементами */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* Стиль для кнопки "Назад" */
+.back-btn {
+    text-decoration: none;
+    color: #333;  /* Темно-сірий колір тексту */
+    font-size: 18px;
+    padding: 5px 10px;
+    border: 1px solid #333;  /* Сіра рамка */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #333;  /* Темніший фон при наведенні */
+    color: white;  /* Білий текст при наведенні */
+}
+
+}
+
+/* Category Card */
+.forum-post {
+    position: relative; /* Для правильного розташування меню */
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1150px;
+    width: 100%;
+    margin-bottom: 15px; /* Додатковий відступ між категоріями */
+}
+
+.forum-post a {
+    text-decoration: none;
+    color: black;
+    font-size: 1.2em;
+}
+
+.forum-post a:hover {
+    color: rgb(30, 30, 30);
+}
+
+/* Post Menu (Dropdown) */
+.post-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.menu-btn-forum {
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Dropdown Menu Styles */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    min-width: 150px;
+    border-radius: 4px;
+    padding: 0;
+}
+
+.dropdown-menu a,
+.dropdown-menu button {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Показати меню при натисканні */
+.post-menu.active .dropdown-menu {
+    display: block;
+}
+
+/* Utility Styles */
+.delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1em;
+}
+
+.add-forum-post-btn {
+    display: inline-block;
+    background-color: #333; /* Темно-сірий колір */
+    color: #fff; /* Білий текст */
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px; /* Згладжені кути */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Анімація */
+}
+
+.add-forum-post-btn:hover {
+    background-color: #000; /* Чорний колір при наведенні */
+    transform: scale(1.05); /* Збільшення при наведенні */
+}
+
+.add-forum-post-btn:active {
+    transform: scale(0.95); /* Легке зменшення при кліку */
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* Стиль для кнопки "Назад" */
+.back-btn {
+    text-decoration: none;
+    color: #333;  /* Темно-сірий колір тексту */
+    font-size: 18px;
+    padding: 5px 10px;
+    border: 1px solid #333;  /* Сіра рамка */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #333;  /* Темніший фон при наведенні */
+    color: white;  /* Білий текст при наведенні */
+}
+
+/* Стиль для заголовка */
+.page-title {
+    font-size: 2em;
+    margin: 0;
+    color: #333;  /* Темно-сірий колір тексту */
+}
