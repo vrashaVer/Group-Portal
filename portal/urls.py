@@ -39,7 +39,10 @@ urlpatterns = [
     path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
     path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
     path('delete-photo/<int:photo_id>/', views.DeleteAnnouncementPhotoView.as_view(), name='delete_photo'),
-
+    path('add-event/', views.AddEventView.as_view(), name='add_event'),
+    path('event-detail/<int:pk>/', views.EventDetailView.as_view(), name='event_detail'),
+    path('delete-event/<int:pk>/', views.EventDeleteView.as_view(), name='delete_event'),
+    path('edit-event/<int:pk>/', views.EditEventView.as_view(), name='edit_event'),
     ]
 
 if settings.DEBUG:

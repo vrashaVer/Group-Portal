@@ -40,18 +40,20 @@
 }
 
 .search-container {
+    display: flex;
     padding: 10px; /* Внутрішні відступи для контейнера пошуку */
     background-color: #f9f9f9; /* Колір фону для пошукової стрічки */
     border-bottom: 1px solid #ccc; /* Рамка знизу для відділення від списку завдань */
-    text-align: center; /* Центрування вмісту контейнера */
+    justify-content: center;
+    align-items: center;
 }
 
 .search-bar {
-    width: 90%; /* Зменшуємо ширину, щоб не виходила за межі */
-    max-width: 700px; /* Максимальна ширина для пошукової стрічки */
+    width: 600px;
+    flex-grow: 1;
     padding: 8px;
-    margin: 0 auto; /* Центрування по горизонталі */
-    display: block; /* Блочний елемент для центрування */
+    margin-right: 10px;
+    box-sizing: border-box;
 }
 
 .main-container {
@@ -65,4 +67,111 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Стилі для блоку з меню */
+.edit-menu {
+    display: inline-block;
+    position: absolute;
+    top: 10px; /* Відступ зверху */
+    right: 10px; /* Відступ справа */
+
+}
+
+/* Кнопка три крапки */
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem; /* Розмір кнопки */
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Випадаюче меню */
+.dropdown-menu {
+    display: none; /* Приховане за замовчуванням */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 10;
+    width: max-content; /* Підлаштовується під контент */
+    padding: 5px 0;
+}
+
+/* Стилі для посилань в меню */
+.dropdown-menu a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f0f0f0;
+    color: #000;
+    cursor: pointer;
+}
+
+/* Відображення меню при натисканні */
+.edit-menu.active .dropdown-menu {
+    display: block; /* Показувати меню */
+}
+
+.admin-menu {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+.admin-dropdown-menu {
+    display: none; /* Приховане за замовчуванням */
+    position: absolute;
+    right: 0;
+    top: 100%; /* Випадає нижче кнопки */
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    z-index: 10;
+    width: max-content;
+    padding: 5px 0;
+
+}
+
+.admin-dropdown-menu a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.admin-dropdown-menu a:hover {
+    background-color: #f0f0f0;
+    color: #000;
+    cursor: pointer;
+}
+
+.admin-menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem; /* Розмір кнопки */
+    cursor: pointer;
+    padding: 5px;
+}
+
+.admin-menu.active .admin-dropdown-menu {
+    display: block; /* Відображає меню */
+}
+
+.info-board {
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }

@@ -19,21 +19,34 @@
 </aside>
 <div class="main-container">
     <div class="search-container">
-        <form id="search-form" method="get" action="{% url 'event_list' %}">
+        <form id="search-form" method="get" action="{% url 'event_list'%}">
             <input type="text" name="search" id="search-input" placeholder="Пошук подій на рік..." class="search-bar" value="{{ search }}" oninput="submitSearch()">
         </form>
-
-        <div class="post-menu">
-                <a href="">Додати подію</a>
+        <div class="admin-menu">
+            <button class="admin-menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+            <div class="admin-dropdown-menu">
+                <a href="{% url 'add_event'%}">Додати подію</a>
+            </div>
         </div>
     </div>
     <div class="list-elements">
         {% for event in events %}
             <div class="event">
+                <div class="edit-menu">
+                    <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                    <div class="dropdown-menu">
+                        <a href="{% url 'edit_event' event.id %}">Змінити подію</a>
+                        <form method="post" action="{% url 'delete_event' event.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">Видалити подію</button>
+                        </form>
+                    </div>
+                </div>
+                <a href="{% url 'event_detail' event.id%}">
                 <h2>{{ event.title }}</h2>
                 <p>Дата: {{ event.date }}</p>
                 <p>{{ event.description }}</p>
-                
+                </a>
                 {% if event.image %}
                     <img src="{{ event.image.url }}" alt="Зображення події {{ event.title }}">
                 {% endif %}
@@ -41,4 +54,33 @@
         {% endfor %}
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Функція для обробки натискання на меню
+        const setupMenu = (menuButtonClass, menuParentClass) => {
+            const buttons = document.querySelectorAll(`.${menuButtonClass}`);
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Зупиняє спливання подій
+                    const parentMenu = button.closest(`.${menuParentClass}`);
+                    parentMenu.classList.toggle('active');
+                });
+            });
+        };
+
+        // Ініціалізація меню для різних типів
+        setupMenu('menu-btn', 'edit-menu');
+        setupMenu('admin-menu-btn', 'admin-menu');
+
+        // Закриття всіх меню при кліку поза ними
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.edit-menu.active, .admin-menu.active').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        });
+    });
+</script>
+
+ 
 {% endblock %}

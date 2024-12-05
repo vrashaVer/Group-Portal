@@ -924,3 +924,75 @@ class EventListView(ListView):
         context = super().get_context_data(**kwargs)
         context['search'] = self.request.GET.get('search', '')
         return context
+    
+class AddEventView(View):
+    template_name = 'portal/events/add_event.html'
+    def get(self, request):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        return render(request, self.template_name)
+
+    def post(self, request):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        date = request.POST.get('date')
+
+        Event.objects.create(title=title, date=date, content=content)
+        return redirect('event_list')
+
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+
+class EventDetailView(View):
+    template_name = 'portal/events/event_detail.html'
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        return render(request, self.template_name, {'event': event})
+    
+class EventDeleteView(View):
+    def post(self, request, pk):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї дії.")
+        event = get_object_or_404(Event, pk=pk)
+        event.delete()
+        return HttpResponseRedirect(reverse_lazy('event_list'))
+    
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+    
+class EditEventView(View):
+    template_name = 'portal/events/edit_event.html'
+    def get(self, request, pk):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        event = get_object_or_404(Event, pk=pk)
+        return render(request, self.template_name, {'event': event})
+
+    def post(self, request, pk):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        event = get_object_or_404(Event, pk=pk)
+        event.title = request.POST.get('title')
+        event.content = request.POST.get('content')
+        event.date = request.POST.get('date')
+        event.save()
+
+        return redirect('event_list')
+
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
