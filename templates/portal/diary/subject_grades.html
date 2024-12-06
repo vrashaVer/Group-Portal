@@ -9,12 +9,12 @@
 
 
 <div class="header-container">
-    <a href="{% url 'subject_list' %}" class="back-btn">&#8592; Назад</a>
-    <h2 class="subject-name">{{ subject.name }}</h2>
+        <a href="{% url 'subject_list' %}" class="back-btn">&#8592; Назад</a>
 </div>
 
 <div class="main-container">
-    <div class="subject-header">
+    <div class="subject-info-container">
+
         <div class="initials-container">
             {% if subject.teacher.profile_photo %}
                 <img src="{{ subject.teacher.profile_photo.photo.url }}" alt="Teacher Photo" class="profile-photo-pr">
@@ -25,11 +25,14 @@
                         {% else %}
                             {{ subject.teacher.username|slice:":1" }} <!-- Перша літера логіна -->
                         {% endif %}
-                </div> >
+                </div> 
             {% endif %}
         </div>
-        <h3> Викладач </h3>
-        <h3>{{ subject.teacher.get_full_name }}</h2>
+        <div class="teacher-info">
+            <h2 class="subject-name">{{ subject.name }}</h2>
+            <h3> Викладач </h3>
+            <h4>{{ subject.teacher.get_full_name }}</h4>
+        </div>
     </div>
     <hr class="subject-divider">
     <div class="grades-table">
