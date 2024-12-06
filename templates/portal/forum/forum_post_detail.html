@@ -3,43 +3,53 @@
 {% load static %}
 {% load has_permission %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'forum_post_detail.css' %}">
-
+<link rel="stylesheet" href="{% static 'forum_posts_detail.css' %}">
 
 <div class="main-container">
     <div class="header-container">
         <a href="{% url 'forum_post_list' object.category.id  %}" class="back-btn">&#8592; Назад</a>
-        
-        <a href="{% url 'edit_forum_post' object.id %}" class="edit-link">Редагувати</a>
-    </div>
-    <h1>{{ object.title }}</h1>
-    <p>{{ object.text }}</p>
-    <div class="media-container">
-        {% if object.image %}
-            <img src="{{ object.image.url }}" alt="Post Image">
-        {% endif %}
-
-        {% if object.video %}
-            <video controls>
-                <source src="{{ object.video.url }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+        {% if request.user|has_permission:user or request.user == object.author %}
+            <a href="{% url 'edit_forum_post' object.id %}" class="edit-link">Редагувати</a>
         {% endif %}
     </div>
-    
-    <div class="comments-list" id="comments-list">
-        {% for comment in comments %}
-            <div class="comment-block {% if comment.user == request.user %}current-user{% endif %}">
-                <div class="comment-header">
-                    <span class="comment-author">{{ comment.user.username }}</span>
-                    <span class="comment-date">{{ comment.created_at|date:"d M Y H:i" }}</span>
+    <div class="post-author-container">
+        <div class="author-left">
+            {% if object.author.profile_photo and object.author.profile_photo.photo %}
+                <img src="{{ object.author.profile_photo.photo.url }}?{{ object.author.profile_photo.updated_at }}" alt="Author Photo" class="profile-photo">
+            {% else %}
+                <div class="user-icon-profile" style="background-color: {{ object.author.profile_color.color|default:'#cccccc' }};">
+                    {% if object.author.first_name and object.author.last_name %}
+                        {{ object.author.first_name|slice:":1" }}{{ object.author.last_name|slice:":1" }}
+                    {% else %}
+                        {{ object.author.username|slice:":1" }}
+                    {% endif %}
                 </div>
-                <p class="comment-text">{{ comment.text }}</p>
-            </div>
-        {% empty %}
-            <p>No comments yet.</p>
-        {% endfor %}
+            {% endif %}
+        </div>
+        <div class="author-middle">
+            <span class="author-username">{{ object.author.username }}</span>
+        </div>
+        <div class="author-right">
+            <span class="post-date">{{ object.created_at|date:"d M Y H:i" }}</span>
+        </div>
     </div>
+    <div class="post-content">
+        <h3>{{ object.title }}</h1>
+        <p>{{ object.text }}</p>
+        <div class="media-container">
+            {% if object.image %}
+                <img src="{{ object.image.url }}" alt="Post Image">
+            {% endif %}
+
+            {% if object.video %}
+                <video controls>
+                    <source src="{{ object.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+        </div>
+    </div>
+    <hr class="sector-divider">
 
     <div class="comment-form-container">
         <form id="comment-form" method="post" action="{% url 'add_comment' object.id %}" class="comment-form">
@@ -48,6 +58,42 @@
             <button type="submit" class="btn">Submit</button>
         </form>
     </div>
+
+    <div class="comments-list" id="comments-list">
+        {% for comment in comments %}
+            <div class="comment-block {% if comment.user == request.user %}current-user{% endif %}">
+                <div class="comment-left">
+                 
+                        {% if profile_photo and profile_photo.photo %}
+                        <img src="{{ profile_photo.photo.url }}?{{ profile_photo.updated_at }}" alt="Profile Photo" class="profile-photo-pr">
+                        {% else %}
+                            <div class="user-icon-profile" style="background-color: {{ user.profile_color.color|default:'#cccccc' }};">
+                                {% if user.first_name and user.last_name %}
+                                    {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }} <!-- Ініціали -->
+                                {% else %}
+                                    {{ user.username|slice:":1" }} <!-- Перша літера логіна -->
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    
+                        <span class="comment-author">{{ comment.user.username }}</span>
+                        {% if comment.user == object.author %}
+                            <span class="author-badge">(автор)</span>
+                        {% endif %}
+                  
+                        
+                </div>
+                <div class="comment-right">
+                    <div class="comment-date">{{ comment.created_at|date:"d M Y H:i" }}</div>
+                    <p class="comment-text">{{ comment.text }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+
+    
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
