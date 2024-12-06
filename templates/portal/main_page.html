@@ -164,7 +164,15 @@
     </div>
 </div>
 <aside class="sidebar-events" style="margin: 0;">
+    <div>
+    <h3>Події на місяць:</h3>
     <div class="sidebar-div-events">
+        {% for event in events %}
+            <a href="{% url 'event_detail' event.id%}" class="link-text"><div class="event">{{ event.title|truncatechars:15 }}<br>
+                <span style="font-size: 12px; ">{{ event.date|date:"d F" }}</span>
+            </div></a>
+        {% endfor %}
+    </div>
     </div>
 </aside>
 

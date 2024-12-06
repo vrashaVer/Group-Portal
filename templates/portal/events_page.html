@@ -30,27 +30,29 @@
         </div>
     </div>
     <div class="list-elements">
-        {% for event in events %}
-            <div class="event">
-                <div class="edit-menu">
-                    <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
-                    <div class="dropdown-menu">
-                        <a href="{% url 'edit_event' event.id %}">Змінити подію</a>
-                        <form method="post" action="{% url 'delete_event' event.id %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-btn">Видалити подію</button>
-                        </form>
+        {% for month_year, events_in_month in grouped_events %}
+            <h3 class="month-heading">{{ month_year }}</h3>
+            <hr>
+            {% for event in events_in_month %}
+                <div class="event">
+                    <div class="edit-menu">
+                        <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                        <div class="dropdown-menu">
+                            <a href="{% url 'edit_event' event.id %}">Змінити подію</a>
+                            <form method="post" action="{% url 'delete_event' event.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">Видалити подію</button>
+                            </form>
+                        </div>
                     </div>
+                    <a href="{% url 'event_detail' event.id%}" class="link-text">
+                    <div class="event-text">{{ event.date|date:"d F" }} - <h2 class="event-title">{{ event.title|truncatechars:20 }}</h2></div>
+                    </a>
+                    {% if event.image %}
+                        <img src="{{ event.image.url }}" alt="Зображення події {{ event.title }}">
+                    {% endif %}
                 </div>
-                <a href="{% url 'event_detail' event.id%}">
-                <h2>{{ event.title }}</h2>
-                <p>Дата: {{ event.date }}</p>
-                <p>{{ event.description }}</p>
-                </a>
-                {% if event.image %}
-                    <img src="{{ event.image.url }}" alt="Зображення події {{ event.title }}">
-                {% endif %}
-            </div>
+            {% endfor %}
         {% endfor %}
     </div>
 </div>

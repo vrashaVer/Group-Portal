@@ -17,6 +17,7 @@ import re
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from collections import defaultdict
 
 
 class MainPageView(LoginRequiredMixin, ListView):
@@ -92,6 +93,8 @@ class MainPageView(LoginRequiredMixin, ListView):
             }
 
         context['poll_results'] = poll_results
+        context['events'] = Event.objects.filter(date__month=timezone.now().month, date__year=timezone.now().year).order_by('-date')
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -917,12 +920,20 @@ class EventListView(ListView):
             query = Q()
             for word in words:
                 query |= Q(title__icontains=word) | Q(content__icontains=word)
-            return Event.objects.filter(query).distinct()
-        return Event.objects.all()
+            return Event.objects.filter(query).distinct().order_by('-date')
+        return Event.objects.all().order_by('-date')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search'] = self.request.GET.get('search', '')
+        events = context['events']
+        events_sorted = events.order_by('-date')
+        grouped_events = defaultdict(list)
+        for event in events_sorted:
+            month_year = event.date.strftime('%B %Y')  # Місяць і рік
+            grouped_events[month_year].append(event)  # Додаємо подію в групу
+
+        context['grouped_events'] = list(grouped_events.items())
         return context
     
 class AddEventView(View):
