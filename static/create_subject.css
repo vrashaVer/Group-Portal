@@ -1,0 +1,83 @@
+/* Загальний контейнер */
+.create-subject-container {
+    max-width: 600px; /* Обмеження ширини форми */
+    margin: 50px auto; /* Центрування форми */
+    padding: 20px;
+    background-color: #ffffff; /* Білий фон */
+    border: 1px solid #ddd; /* Тонкий бордюр */
+    border-radius: 8px; /* Згладжені кути */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Легка тінь */
+}
+
+/* Заголовок */
+.create-subject-container h1 {
+    text-align: center;
+    font-size: 1.8em;
+    color: #333; /* Темно-сірий текст */
+    margin-bottom: 20px;
+}
+
+/* Форма */
+.create-subject-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Поля форми */
+.create-subject-container form input[type="text"],
+.create-subject-container form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box; /* Уникаємо проблем з розміром */
+}
+
+.create-subject-container form input[type="text"]:focus,
+.create-subject-container form select:focus {
+    border-color: #666; /* Зміна кольору бордюра при фокусі */
+    outline: none;
+}
+
+/* Кнопка створення категорії */
+.create-subject-container form button[type="submit"] {
+    background-color: #333; /* Темно-сірий фон */
+    color: #fff; /* Білий текст */
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.create-subject-container form button[type="submit"]:hover {
+    background-color: #000; /* Чорний фон при наведенні */
+    transform: scale(1.05); /* Легке збільшення */
+}
+
+.create-subject-container form button[type="submit"]:active {
+    transform: scale(0.95); /* Зменшення при натисканні */
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #333; /* Темний текст */
+    text-decoration: none; /* Без підкреслення */
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.back-link:hover {
+    color: #000; /* Чорний текст при наведенні */
+    text-decoration: underline; /* Підкреслення при наведенні */
+}
+
+.back-link:active {
+    color: #666; /* Світліший текст при натисканні */
+}

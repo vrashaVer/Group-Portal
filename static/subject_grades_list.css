@@ -1,0 +1,124 @@
+.main-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 20px; 
+    
+}
+
+/* Приховані елементи */
+.hidden {
+    display: none;
+}
+
+/* Стилі для таблиці */
+.grades-table {
+    overflow-x: auto; /* Додає горизонтальну прокрутку */
+    -webkit-overflow-scrolling: touch; /* Для плавної прокрутки на мобільних пристроях */
+    width: 100%;
+}
+
+.grades-table table {
+    width: max-content;  /* Ширина таблиці буде залежати від вмісту */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.grades-table th, .grades-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.grades-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+/* Кнопки */
+button {
+    padding: 10px 20px;
+    margin: 10px 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button.hidden {
+    display: none;
+}
+
+/* Форма */
+#assignment-form-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Заголовок предмету */
+.subject-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.subject-header img.profile-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.subject-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Кнопка назад */
+.back-button {
+    margin-top: 20px;
+}
+
+.back-button .btn-back {
+    text-decoration: none;
+    color: white;
+    background-color: #6c757d;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button .btn-back:hover {
+    background-color: #5a6268;
+}
+
+.subject-divider {
+    border: 0;
+    border-top: 2px solid #000; /* чорна лінія */
+    margin: 20px 0; /* відступи зверху і знизу */
+}
+
+
+/* Стиль для кнопки "Назад" */
+.back-btn {
+    text-decoration: none;
+    color: #333;  /* Темно-сірий колір тексту */
+    font-size: 18px;
+    padding: 5px 10px;
+    border: 1px solid #333;  /* Сіра рамка */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #333;  /* Темніший фон при наведенні */
+    color: white;  /* Білий текст при наведенні */
+}

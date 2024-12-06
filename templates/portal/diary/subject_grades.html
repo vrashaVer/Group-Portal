@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load has_permission %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'subject_grades_list.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<div class="header-container">
+    <a href="{% url 'subject_list' %}" class="back-btn">&#8592; Назад</a>
+    <h2 class="subject-name">{{ subject.name }}</h2>
+</div>
+
+<div class="main-container">
+    <div class="subject-header">
+        <div class="initials-container">
+            {% if subject.teacher.profile_photo %}
+                <img src="{{ subject.teacher.profile_photo.photo.url }}" alt="Teacher Photo" class="profile-photo-pr">
+            {% else %}
+                <div class="user-icon-profile"style="background-color: {{ user.profile_color.color|default:'#cccccc' }};">
+                    {% if user.first_name and user.last_name %}
+                            {{ subject.teacher.first_name|slice:":1" }}{{ subject.teacher.last_name|slice:":1" }} <!-- Ініціали -->
+                        {% else %}
+                            {{ subject.teacher.username|slice:":1" }} <!-- Перша літера логіна -->
+                        {% endif %}
+                </div> >
+            {% endif %}
+        </div>
+        <h3> Викладач </h3>
+        <h3>{{ subject.teacher.get_full_name }}</h2>
+    </div>
+    <hr class="subject-divider">
+    <div class="grades-table">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Завдання / Студенти</th>
+                    {% for student in students %}
+                        <th>{{ student.get_full_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                    <tr>
+                        <td>
+                            <span class="assignment-title" data-assignment-id="{{ assignment.id }}">{{ assignment.title }}</span>
+                            <input 
+                                type="text" 
+                                class="edit-assignment-title hidden" 
+                                data-assignment-id="{{ assignment.id }}" 
+                                value="{{ assignment.title }}">
+                        </td>
+                        {% for student in students %}
+                            <td>
+                                <input 
+                                    type="number" 
+                                    data-assignment-id="{{ assignment.id }}" 
+                                    data-student-id="{{ student.id }}" 
+                                    value="{% for grade in grades %}{% if grade.assignment.id == assignment.id and grade.student.id == student.id %}{{ grade.grade }}{% endif %}{% endfor %}" 
+                                    class="grade-input">
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button id="save-grades">Зберегти оцінки</button>
+        <button id="edit-assignments">Редагувати завдання</button>
+        <button id="save-assignments" class="hidden">Зберегти завдання</button>
+    </div>
+    <button id="show-form-btn">Додати завдання</button>
+
+    <!-- Форма для додавання завдання -->
+    <div id="assignment-form-container" class="hidden">
+        <h2>Додати нове завдання</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ assignment_form.as_p }}
+            <button type="submit">Зберегти</button>
+        </form>
+    </div>
+</div>
+    <script>
+     
+
+        $('#save-grades').click(function () {
+            $('.grade-input').each(function () {
+                let assignmentId = $(this).data('assignment-id');
+                let studentId = $(this).data('student-id');
+                let grade = $(this).val();
+
+                $.post("{% url 'edit_grades' subject.id %}", {
+                    'assignment_id': assignmentId,
+                    'student_id': studentId,
+                    'grade': grade,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                });
+            });
+            alert('Оцінки збережено!');
+            window.location.reload();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const showFormBtn = document.getElementById('show-form-btn');
+            const formContainer = document.getElementById('assignment-form-container');
+
+            showFormBtn.addEventListener('click', function () {
+                // Перемикаємо видимість форми
+                formContainer.classList.toggle('hidden');
+            });
+        });
+        $('#edit-assignments').click(function () {
+            $('.assignment-title').addClass('hidden');
+            $('.edit-assignment-title').removeClass('hidden');
+            $('#edit-assignments').addClass('hidden');
+            $('#save-assignments').removeClass('hidden');
+        });
+
+        // Збереження змінених завдань
+        $('#save-assignments').click(function () {
+            $('.edit-assignment-title').each(function () {
+                let assignmentId = $(this).data('assignment-id');
+                let newTitle = $(this).val();
+
+                $.post("{% url 'edit_assignments' subject.id %}", {
+                    'assignment_id': assignmentId,
+                    'new_title': newTitle,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                });
+            });
+            alert('Завдання збережено!');
+            
+            $('.assignment-title').removeClass('hidden');
+            $('.edit-assignment-title').addClass('hidden');
+            $('#edit-assignments').removeClass('hidden');
+            $('#save-assignments').addClass('hidden');
+            window.location.reload();
+        });
+    </script>
+
+{% endblock %}

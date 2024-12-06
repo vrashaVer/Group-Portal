@@ -1,6 +1,6 @@
 from django.contrib import admin
 from portal.models import Announcement,AnnouncementPhoto,Comment,Like,Poll,Choice,Vote, Photo, PhotoPost, Event, ForumCategory, ForumPost,Role,UserRole, ProfileType
-from portal.models import ProfilePhoto, ProfileColor
+from portal.models import ProfilePhoto, ProfileColor, Subject,Assignment, Grade
 
 
 admin.site.register(Announcement)
@@ -20,7 +20,6 @@ admin.site.register(ForumPost)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
 
-# Реєструємо модель UserRole в адміністративній панелі
 @admin.register(UserRole)
 class UserRoleAdmin(admin.ModelAdmin):
     list_display = ('user', 'role')
@@ -36,3 +35,15 @@ class ProfilePhotoAdmin(admin.ModelAdmin):
 @admin.register(ProfileColor)
 class ProfileColorAdmin(admin.ModelAdmin):
     list_display = ['user', 'color']
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'teacher')
+
+@admin.register(Assignment)
+class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'subject', 'due_date')
+
+@admin.register(Grade)
+class GradeAdmin(admin.ModelAdmin):
+    list_display = ('assignment', 'student', 'grade')

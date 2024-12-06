@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load has_permission %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'subjects_list.css' %}">
+
+
+<aside class="sidebar" style="margin: 0;">
+    <div class="sidebar-div">
+        <nav class="sidebar-nav">
+            <a href="{% url 'gallery'%}">Галерея</a>
+            <a href="{% url 'event_list'%}">Події</a>
+            <a href="">Опитування</a>
+        </nav>
+    </div>
+
+    
+</aside>
+
+
+<div class="main-container">
+    <h1>Категорії форума:</h1>
+    {% if request.user|has_permission:user %}
+        <a href="{% url 'subject_create' %}" class="add-subject-btn">Додати Предмет</a>
+    {% endif %}
+
+    {% for subject in subjects %}
+    <div class="subject">
+            
+        <a href="{% url 'subject_grades' subject.id %}">{{ subject.name }}</a>
+        {% if request.user|has_permission:user %}
+            <div class="post-menu">
+                <button class="menu-btn-subjects">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                <div class="dropdown-menu">
+                    <a href="{% url 'subject_edit' subject.id %}">Редагувати</a>
+                    <form method="post" action="{% url 'subject_delete' subject.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити дей предмет?');">Видалити</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div>  
+    {% endfor %}
+</div>
+
+
+<script>
+    document.querySelectorAll('.menu-btn-subjects').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();  // Запобігає закриттю меню при кліку на саму кнопку
+            const menu = this.closest('.post-menu');  // Знаходимо найближчий батьківський елемент з класом .post-menu
+            menu.classList.toggle('active'); // Додаємо/вилучаємо клас 'active' для елемента .post-menu
+        });
+    });
+
+    // Закриття меню при кліку поза його межами
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.post-menu')) {
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.classList.remove('active');  // Видаляємо клас 'active', щоб приховати меню
+            });
+        }
+    });
+  
+</script>
+{% endblock %}

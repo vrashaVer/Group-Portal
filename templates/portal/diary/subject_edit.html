@@ -1,0 +1,19 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'subject_edit.css' %}">
+
+
+<div class="edit-subject-container">
+
+    <h1>Редагувати Предмет</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit">Зберегти зміни</button>
+    </form>
+
+    <a href="{% url 'subject_list' %}" class="back-link">Back to Subject</a>
+
+</div>

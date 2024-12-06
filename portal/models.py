@@ -168,3 +168,40 @@ class ProfileColor(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile Color"
+    
+
+
+class Subject(models.Model):
+    name = models.CharField(max_length=100)
+    teacher = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'profile_type__user_type': 'teacher'}, 
+        related_name='subjects'
+    )
+
+    def __str__(self):
+        return self.name
+
+class Assignment(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='assignments')
+    title = models.CharField(max_length=100)
+    due_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.title} - {self.subject.name}"
+
+class Grade(models.Model):
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='grades')
+    student = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'profile_type__user_type': 'student'}
+    )
+    grade = models.IntegerField()
+
+    class Meta:
+        unique_together = ('assignment', 'student')
+
+    def __str__(self):
+        return f"{self.assignment.title} - {self.student.username}: {self.grade}"

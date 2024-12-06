@@ -124,7 +124,7 @@
                     </div>
                     <div class="dropdown-section">
                         <a href="{%url 'user_profile'%}">Профіль</a>
-                        <a href="">Щоденник</a>
+                        <a href="{% url 'subject_list'%}">Щоденник</a>
                     </div>
                     <div class="dropdown-section">
                         <form method="post" action="{% url 'logout'%}">

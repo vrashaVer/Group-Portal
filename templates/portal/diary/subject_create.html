@@ -1,0 +1,17 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'create_subject.css' %}">
+
+
+<div class="create-subject-container">
+    <h1>Create a New Subject</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Subject</button>
+    </form>
+    <a href="{% url 'subject_list' %}" class="back-link">Back to Subjects</a>
+</div>
+
+

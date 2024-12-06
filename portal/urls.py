@@ -39,6 +39,13 @@ urlpatterns = [
     path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
     path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
     path('delete-photo/<int:photo_id>/', views.DeleteAnnouncementPhotoView.as_view(), name='delete_photo'),
+    path("diary/subjects", views.SubjectListView.as_view(), name="subject_list"),
+    path("diary/subjects/create/", views.SubjectCreateView.as_view(), name="subject_create"),
+    path("diary/subjects/<int:pk>/edit/", views.SubjectUpdateView.as_view(), name="subject_edit"),
+    path("diary/subjects/<int:pk>/delete/", views.SubjectDeleteView.as_view(), name="subject_delete"),
+    path('diary/subjects/<int:pk>/grades/', views.SubjectGradesView.as_view(), name='subject_grades'),
+    path('diary/subjects/<int:pk>/edit-grades/', views.EditGradesView.as_view(), name='edit_grades'),
+    path('edit-assignments/<int:subject_id>/', views.EditAssignmentsView.as_view(), name='edit_assignments'),
 
     ]
 

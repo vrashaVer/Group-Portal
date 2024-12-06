@@ -5,10 +5,10 @@ from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormMixin
 from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Photo, AnnouncementPhoto, Event, ForumCategory, ForumPost, Role, UserRole, ProfileType
-from .models import ProfileColor, ProfilePhoto
+from .models import ProfileColor, ProfilePhoto, Subject,Assignment,Grade
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,ProfilePhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,ProfilePhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm, AssignmentForm,GradeForm, SubjectForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
@@ -21,6 +21,7 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
+from django.contrib import messages
 
 class MainPageView(LoginRequiredMixin, ListView):
     template_name = 'portal/main_page.html'
@@ -224,7 +225,7 @@ class AddAnnouncementView(LoginRequiredMixin, CreateView):
 
 
 
-class AddCommentView(View):
+class AddCommentView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             announcement_id = request.POST.get('announcement_id')
@@ -256,7 +257,7 @@ class AddCommentView(View):
         return JsonResponse({'success': False, 'error': 'Invalid request.'}, status=400)
     
 
-class LoadCommentsView(View):
+class LoadCommentsView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         announcement_id = request.GET.get('announcement_id')
         
@@ -283,14 +284,14 @@ class LoadCommentsView(View):
         except Announcement.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Announcement not found.'}, status=404)
         
-class GalleryView(View):
+class GalleryView(LoginRequiredMixin,View):
     template_name = 'portal/gallery_list.html'
 
     def get(self, request):
         posts = PhotoPost.objects.all().order_by('-created_at')  # Сортуємо пости від нових до старих
         return render(request, self.template_name, {'posts': posts})
     
-class CreatePollView(View):
+class CreatePollView(LoginRequiredMixin,View):
     template_name = 'portal/create_poll.html'
 
     def get(self, request, *args, **kwargs):
@@ -315,7 +316,7 @@ class CreatePollView(View):
 
 
 
-class CreatePostWithPhotosView(View):
+class CreatePostWithPhotosView(LoginRequiredMixin,View):
     def get(self, request):
         post_form = PostForm()
         return render(request, 'portal/create_photopost.html', {'post_form': post_form})
@@ -342,7 +343,7 @@ class CreatePostWithPhotosView(View):
 
         return render(request, 'portal/create_post_with_photos.html', {'post_form': post_form})
     
-class PhotoPostEditView(UpdateView):
+class PhotoPostEditView(LoginRequiredMixin,UpdateView):
     model = PhotoPost
     form_class = PhotoPostEditForm
     template_name = 'portal/edit_post.html'
@@ -370,7 +371,7 @@ class PhotoPostEditView(UpdateView):
 
         return super().form_valid(form)
     
-class PhotoPostDeleteView(View):
+class PhotoPostDeleteView(LoginRequiredMixin,View):
     def post(self, request, pk):
         # Отримуємо пост
         post = get_object_or_404(PhotoPost, pk=pk)
@@ -379,7 +380,7 @@ class PhotoPostDeleteView(View):
 
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('gallery'))
-class PollDeleteView(View):
+class PollDeleteView(LoginRequiredMixin,View):
     def post(self, request, pk):
         # Отримуємо пост
         poll = get_object_or_404(Poll, pk=pk)
@@ -390,7 +391,7 @@ class PollDeleteView(View):
         # Перенаправляємо на сторінку галереї після видалення
         return HttpResponseRedirect(reverse_lazy('main'))
     
-class AnnouncementDeleteView(View):
+class AnnouncementDeleteView(LoginRequiredMixin,View):
     def post(self, request, pk):
         # Отримуємо пост
         announcement = get_object_or_404(Announcement, pk=pk)
@@ -497,13 +498,13 @@ class DeleteAnnouncementPhotoView(LoginRequiredMixin, View):
         photo.delete()
         return JsonResponse({'message': 'Photo deleted successfully.'}, status=200)
     
-class CategoryListView(ListView):
+class CategoryListView(LoginRequiredMixin,ListView):
     model = ForumCategory
     template_name = 'portal/forum/category_list.html'
     context_object_name = 'categories'
 
 
-class ForumPostListView(ListView):
+class ForumPostListView(LoginRequiredMixin,ListView):
     model = ForumPost
     template_name = 'portal/forum/forum_post_list.html'
     context_object_name = 'forum_posts'
@@ -518,7 +519,7 @@ class ForumPostListView(ListView):
         context['category_id'] = self.kwargs['category_id']  # Додаємо category_id у контекст
         return context
 
-class ForumPostDetailView(FormMixin, DetailView):
+class ForumPostDetailView(LoginRequiredMixin,FormMixin, DetailView):
     model = ForumPost
     template_name = 'portal/forum/forum_post_detail.html'
     context_object_name = 'forum_posts'
@@ -569,11 +570,10 @@ class ForumCategoryCreateView(CreateView):
     success_url = reverse_lazy('category_list')  # URL, куди перенаправити після створення
 
     def form_valid(self, form):
-        # Додаткові дії перед збереженням, якщо необхідно
         return super().form_valid(form)
     
 
-class ForumPostDeleteView(View):
+class ForumPostDeleteView(LoginRequiredMixin,View):
     def post(self, request, pk):
         # Отримуємо пост
         post = get_object_or_404(ForumPost, pk=pk)
@@ -610,7 +610,7 @@ class ForumPostUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class ForumCategoryDeleteView(View):
+class ForumCategoryDeleteView(LoginRequiredMixin,View):
     def post(self, request, pk):
         # Отримуємо пост
         category = get_object_or_404(ForumCategory, pk=pk)
@@ -675,17 +675,6 @@ class ForumPostCreateView(LoginRequiredMixin, CreateView):
         # Повертаємо на список постів у категорії після створення
         return reverse_lazy('forum_post_list', kwargs={'category_id': self.kwargs['category_id']})
 
-
-# class RegisterView(CreateView):
-#     form_class = CustomUserCreationForm
-#     template_name = 'portal/registration/register.html'
-#     success_url = reverse_lazy('home')  # Замість 'home' вставте вашу цільову URL-адресу
-
-#     def form_valid(self, form):
-#         user = form.save()
-#         login(self.request, user)  # Автоматично увійти після реєстрації
-#         return redirect(self.success_url)
-    
 class CustomLoginView(LoginView):
     template_name = 'portal/registration/login.html'  # Вкажіть свій шаблон для входу
     success_url = reverse_lazy('main')  # URL для перенаправлення після успішного входу
@@ -877,7 +866,7 @@ class UserProfileView(LoginRequiredMixin, View):
 
 
 
-class AnUserProfileView(DetailView):
+class AnUserProfileView(LoginRequiredMixin,DetailView):
     model = User
     template_name = 'portal/users/an_user_profile.html'
     context_object_name = 'user_profile'
@@ -889,7 +878,7 @@ class AnUserProfileView(DetailView):
         return context
 
     
-class UserRegistrationView(View):
+class UserRegistrationView(LoginRequiredMixin,View):
     template_name = 'portal/registration/register_user.html'
 
     def get(self, request):
@@ -942,7 +931,7 @@ class UserRegistrationView(View):
             UserRole.objects.filter(user=user, role__name="Admin").exists()
         )
         
-class UserDataListView(View):
+class UserDataListView(LoginRequiredMixin,View):
     template_name = 'portal/users/user_data_list.html'
 
     def get(self, request):
@@ -961,7 +950,7 @@ class UserDataListView(View):
         )
 
 
-class UserEditView(View):
+class UserEditView(LoginRequiredMixin,View):
     template_name = 'portal/users/user_edit.html'
 
     def get(self, request, pk):
@@ -1003,7 +992,7 @@ class UserEditView(View):
             UserRole.objects.filter(user=user, role__name="Admin").exists()
         )
     
-class EventListView(ListView):
+class EventListView(LoginRequiredMixin,ListView):
     model = Event
     template_name = 'portal/events_page.html'
     context_object_name = 'events'
@@ -1022,3 +1011,139 @@ class EventListView(ListView):
         context = super().get_context_data(**kwargs)
         context['search'] = self.request.GET.get('search', '')
         return context
+    
+
+
+class SubjectListView(LoginRequiredMixin,ListView):
+    model = Subject
+    template_name = 'portal/diary/subjects_list.html'
+    context_object_name = 'subjects'
+
+class SubjectDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+
+        subject = get_object_or_404(Subject, pk=pk)
+
+        subject.delete()
+        return HttpResponseRedirect(reverse_lazy('subject_list'))
+    
+class SubjectCreateView(LoginRequiredMixin,CreateView):
+    model = Subject
+    form_class = SubjectForm
+    template_name = 'portal/diary/subject_create.html'
+    success_url = reverse_lazy('subject_list')  # Замініть на вашу сторінку зі списком предметів
+
+class SubjectUpdateView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        # Отримуємо предмет для редагування
+        subject = get_object_or_404(Subject, pk=pk)
+
+
+        form = SubjectForm(instance=subject)
+        return render(request, 'portal/diary/subject_edit.html', {'form': form, 'subject': subject})
+
+    def post(self, request, pk):
+        # Отримуємо предмет для редагування
+        subject = get_object_or_404(Subject, pk=pk)
+
+
+        form = SubjectForm(request.POST, instance=subject)
+
+        if form.is_valid():
+            form.save()  # Зберігаємо зміни
+            return redirect('subject_list')  # Після успішного редагування перенаправляємо на список предметів
+
+        return render(request, 'portal/diary/subject_edit.html', {'form': form, 'subject': subject})
+
+
+class SubjectGradesView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        subject = get_object_or_404(Subject, pk=pk)
+        
+        assignments = subject.assignments.all()
+        students = User.objects.filter(profile_type__user_type='student')
+        grades = Grade.objects.filter(assignment__subject=subject)
+
+        assignment_form = AssignmentForm()
+
+        return render(request, 'portal/diary/subject_grades.html', {
+            'subject': subject,
+            'assignments': assignments,
+            'students': students,
+            'grades': grades,
+            'assignment_form': assignment_form,
+        })
+
+    def post(self, request, pk):
+        subject = get_object_or_404(Subject, pk=pk)
+        assignment_form = AssignmentForm(request.POST)
+
+        if assignment_form.is_valid():
+            assignment = assignment_form.save(commit=False)
+            assignment.subject = subject
+            assignment.save()
+            messages.success(request, "Завдання успішно додано.")
+            return redirect('subject_grades', pk=pk)
+        else:
+            assignments = subject.assignments.all()
+            students = User.objects.filter(profile_type__user_type='student')
+            grades = Grade.objects.filter(assignment__subject=subject)
+
+            return render(request, 'portal/diary/subject_grades.html', {
+                'subject': subject,
+                'assignments': assignments,
+                'students': students,
+                'grades': grades,
+                'assignment_form': assignment_form,
+            })
+    
+
+@method_decorator(csrf_exempt, name='dispatch')
+class EditGradesView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        subject = get_object_or_404(Subject, pk=pk)
+
+ 
+        data = request.POST
+        assignment_id = data.get('assignment_id')
+        student_id = data.get('student_id')
+        grade_value = data.get('grade')
+
+        try:
+            grade = Grade.objects.get(assignment_id=assignment_id, student_id=student_id)
+            if grade_value:
+                grade.grade = int(grade_value)
+                grade.save()
+            else:
+                grade.delete()  # Видаляємо оцінку, якщо поле пусте
+        except Grade.DoesNotExist:
+            if grade_value:
+                Grade.objects.create(
+                    assignment_id=assignment_id,
+                    student_id=student_id,
+                    grade=int(grade_value)
+                )
+
+        return JsonResponse({'status': 'success'})
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class EditAssignmentsView(View):
+    def post(self, request, subject_id):
+     
+        assignment_id = request.POST.get('assignment_id')
+        new_title = request.POST.get('new_title')
+
+        if not assignment_id:
+            return JsonResponse({'success': False, 'error': 'Assignment ID is required'}, status=400)
+
+        if not new_title:
+            assignment = get_object_or_404(Assignment, id=assignment_id, subject_id=subject_id)
+            Grade.objects.filter(assignment=assignment).delete()
+            assignment.delete()
+            return JsonResponse({'success': True, 'message': 'Assignment and related grades deleted.'})
+
+        assignment = get_object_or_404(Assignment, id=assignment_id, subject_id=subject_id)
+        assignment.title = new_title
+        assignment.save()
+
+        return JsonResponse({'success': True, 'new_title': assignment.title})

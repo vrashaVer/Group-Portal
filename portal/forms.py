@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, ProfilePhoto, ProfileColor
+from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, ProfilePhoto, Assignment, Grade, Subject
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 
@@ -122,3 +122,22 @@ class ProfilePhotoForm(forms.ModelForm):
     class Meta:
         model = ProfilePhoto
         fields = ['photo']
+
+class AssignmentForm(forms.ModelForm):
+    class Meta:
+        model = Assignment
+        fields = ['title', 'due_date']
+        widgets = {
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+class GradeForm(forms.ModelForm):
+    class Meta:
+        model = Grade
+        fields = ['grade']
+
+
+class SubjectForm(forms.ModelForm):
+    class Meta:
+        model = Subject
+        fields = ['name', 'teacher'] 
