@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load video_filters %}
+{% load has_permission %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'gallery.css' %}">
@@ -19,22 +20,25 @@
 </aside>
 
 <div class="container">
-    <a href="{% url 'create_post_with_photos'%}">Додати пост</a>
-
+    {% if request.user|has_permission:user %}
+        <a href="{% url 'create_post_with_photos'%}" class="add-post-btn">Додати пост</a>
+    {% endif %}
     {% for post in posts %}
         <div class="post">
             <div class="post-header">
                 <div class="post-title">{{ post.title }}</div>
-                <div class="post-menu">
-                    <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
-                    <div class="dropdown-menu">
-                        <a href="{% url 'edit_post' post.id %}">Редагувати</a>
-                        <form method="post" action="{% url 'delete_post' post.id %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
-                        </form>
+                {% if request.user|has_permission:user %}
+                    <div class="post-menu">
+                        <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                        <div class="dropdown-menu">
+                            <a href="{% url 'edit_post' post.id %}">Редагувати</a>
+                            <form method="post" action="{% url 'delete_post' post.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цей пост?');">Видалити</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
             <div class="post-content">{{ post.content }}</div>
             

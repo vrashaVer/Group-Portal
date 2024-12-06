@@ -36,17 +36,18 @@
             {% for post in forum_posts %}
                 <div class="forum-post">
                     <a href="{% url 'forum_post_detail' post.id %}">{{ post.title }}</a>
-                    <div class="post-menu">
-                        <button class="menu-btn-forum">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
-                        <div class="dropdown-menu">
-                            <a href="{% url 'edit_forum_post' post.id %}?next={{ request.get_full_path }}">Редагувати</a>
-                            <form method="post" action="{% url 'delete_forum_post' post.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
-                            </form>
+                    {% if request.user|has_permission:user %}
+                        <div class="post-menu">
+                            <button class="menu-btn-forum">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                            <div class="dropdown-menu">
+                                <a href="{% url 'edit_forum_post' post.id %}?next={{ request.get_full_path }}">Редагувати</a>
+                                <form method="post" action="{% url 'delete_forum_post' post.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn" onclick="return confirm('Ви впевнені, що хочете видалити цю категорію?');">Видалити</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-
+                    {% endif %}
 
                 </div>
             {% endfor %}

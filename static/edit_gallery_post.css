@@ -1,0 +1,87 @@
+.container {
+    
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 100px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Стилі для форми редагування */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+form input,
+form textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+form input:focus,
+form textarea:focus {
+    border-color: #2f2f2f;
+    outline: none;
+}
+
+form button {
+    padding: 12px 20px;
+    background-color: #525252;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #313131;
+}
+
+/* Стилі для лінку "Назад до галереї" */
+a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #5b5b5b;
+    font-size: 16px;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #333;
+    text-decoration:underline;
+}
+
+/* Стилі для повідомлень про помилки */
+form .errorlist {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+form .errorlist li {
+    list-style-type: none;
+}
