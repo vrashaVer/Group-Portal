@@ -21,7 +21,7 @@
 
 
 <div class="main-container">
-    <h1>Категорії форума:</h1>
+    <h1>Предмети:</h1>
     {% if request.user|has_permission:user %}
         <a href="{% url 'subject_create' %}" class="add-subject-btn">Додати Предмет</a>
     {% endif %}
