@@ -62,26 +62,27 @@
 }
 
 .search-container {
-    display: flex; /* Використовуємо flexbox для розміщення елементів в рядок */
-    justify-content: space-between; /* Простір між елементами */
-    align-items: center; /* Центрування по вертикалі */
+    display: flex;
     padding: 10px; /* Внутрішні відступи для контейнера пошуку */
     background-color: #f9f9f9; /* Колір фону для пошукової стрічки */
     border-bottom: 1px solid #ccc; /* Рамка знизу для відділення від списку завдань */
-    text-align: center; /* Центрування вмісту контейнера */
+    justify-content: center;
+    align-items: center;
 }
 
 .search-bar {
-    width: 100%; /* Зменшуємо ширину, щоб не виходила за межі */
-    max-width: 700px; /* Максимальна ширина для пошукової стрічки */
+    width: 600px;
+    flex-grow: 1;
     padding: 8px;
-    margin: 0 auto; /* Центрування по горизонталі */
-    display: block; /* Блочний елемент для центрування */
+    margin-right: 10px;
+    box-sizing: border-box;
 }
 
 
 .post-menu {
-    position: relative; /* Для правильного позиціонування меню відносно кнопки */
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
 }
 
 /* Стилізація кнопки */
@@ -221,20 +222,6 @@
     background-color: white;
 }
 
-/* Sidebar events */
-.sidebar-div-events{
-    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
-    padding-left: 10px;
-    padding-top: 30px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background-color: #ffffff;
-    margin-top: 20px; /* Відступ зверху для секції */
-    margin-bottom: 20px; /* Відступ знизу для секції */
-    max-height: 200px;
-    box-sizing: border-box; /* Щоб padding не впливав на ширину */
-
-}
 .sidebar-events {
     padding-top: 20px;
     width: 300px;
@@ -330,8 +317,6 @@
     color: #666;
 }
 
-
-
 .comments-section {
     margin-top: 20px; /* Відступ зверху */
 }
@@ -391,4 +376,36 @@
 
 .comment-form button:hover {
     background-color: #0056b3;
+}
+
+.event{
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.link-text {
+    text-decoration: none; /* Видаляє підкреслення */
+    color: black;
+}
+
+/* Sidebar events */
+.sidebar-div-events{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+    max-height: 200px;  /* Встановлює максимальну висоту контейнера */
+    overflow-y: auto;   /* Додає вертикальну прокрутку, якщо вміст виходить за межі */
+    font-size: 15px;
 }

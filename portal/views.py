@@ -22,6 +22,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
 from django.contrib import messages
+from collections import defaultdict
 
 class MainPageView(LoginRequiredMixin, ListView):
     template_name = 'portal/main_page.html'
@@ -96,6 +97,8 @@ class MainPageView(LoginRequiredMixin, ListView):
             }
 
         context['poll_results'] = poll_results
+        context['events'] = Event.objects.filter(date__month=timezone.now().month, date__year=timezone.now().year).order_by('-date')
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1004,16 +1007,94 @@ class EventListView(LoginRequiredMixin,ListView):
             query = Q()
             for word in words:
                 query |= Q(title__icontains=word) | Q(content__icontains=word)
-            return Event.objects.filter(query).distinct()
-        return Event.objects.all()
+            return Event.objects.filter(query).distinct().order_by('-date')
+        return Event.objects.all().order_by('-date')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search'] = self.request.GET.get('search', '')
+        events = context['events']
+        events_sorted = events.order_by('-date')
+        grouped_events = defaultdict(list)
+        for event in events_sorted:
+            month_year = event.date.strftime('%B %Y')  # Місяць і рік
+            grouped_events[month_year].append(event)  # Додаємо подію в групу
+
+        context['grouped_events'] = list(grouped_events.items())
         return context
+
+class AddEventView(View):
+    template_name = 'portal/events/add_event.html'
+    def get(self, request):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        return render(request, self.template_name)
+
+    def post(self, request):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        date = request.POST.get('date')
+
+        Event.objects.create(title=title, date=date, content=content)
+        return redirect('event_list')
+
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+
+class EventDetailView(View):
+    template_name = 'portal/events/event_detail.html'
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        return render(request, self.template_name, {'event': event})
     
+class EventDeleteView(View):
+    def post(self, request, pk):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї дії.")
+        event = get_object_or_404(Event, pk=pk)
+        event.delete()
+        return HttpResponseRedirect(reverse_lazy('event_list'))
+    
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+    
+class EditEventView(View):
+    template_name = 'portal/events/edit_event.html'
+    def get(self, request, pk):
+        # Перевірка прав доступу
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        event = get_object_or_404(Event, pk=pk)
+        return render(request, self.template_name, {'event': event})
 
+    def post(self, request, pk):
+        if not self._has_permission(request.user):
+            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
+        
+        event = get_object_or_404(Event, pk=pk)
+        event.title = request.POST.get('title')
+        event.content = request.POST.get('content')
+        event.date = request.POST.get('date')
+        event.save()
 
+        return redirect('event_list')
+
+    def _has_permission(self, user):
+        return (
+            user.is_superuser or 
+            UserRole.objects.filter(user=user, role__name="Admin").exists()
+        )
+    
 class SubjectListView(LoginRequiredMixin,ListView):
     model = Subject
     template_name = 'portal/diary/subjects_list.html'
