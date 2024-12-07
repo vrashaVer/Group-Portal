@@ -468,3 +468,21 @@
 .announcement {
     position: relative; /* Контейнер має бути відносним для позиціювання */
 }
+.media-content img, .media-content video {
+    width: 100%;  /* Заповнює контейнер по ширині */
+    height: auto;  /* Зберігає пропорції */
+    max-width: 800px;  /* Максимальна ширина */
+    max-height: 400px;  /* Максимальна висота */
+    object-fit: cover;  /* Обрізає вміст, щоб він заповнив контейнер */
+}
+.media-content img{
+    max-height: 800px;
+}
+/* Клас для контейнера з медіа */
+.media-content {
+    display: inline-block;  /* Блочний елемент для зображень та відео */
+    width: 100%;
+    max-width: 800px;  /* Максимальна ширина для контейнера */
+    max-height: 800px;  /* Максимальна висота */
+    overflow: hidden;  /* Обрізає вміст, що перевищує максимальні розміри */
+}

@@ -1,20 +1,10 @@
-{% extends 'base.html' %}
+
 
 {% load static %}
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'events.css' %}">
-<aside class="sidebar" style="margin: 0;">
-    <div class="sidebar-div">
-        <nav class="sidebar-nav">
-            <a href="{% url 'gallery' %}">Галерея</a>
-            <a href="{% url 'event_list'%}">Події</a>
-            <a href="">Опитування</a>
-        </nav>
-    </div>
 
+<link rel="stylesheet" href="{% static 'add_events.css' %}">
 
-</aside>
 <div class = "info-board">
     <h1>Додати подію:</h1>
     <form method="post">
@@ -30,5 +20,5 @@
 
         <button type="submit">Зберегти</button>
     </form>
+    <a href="{% url 'event_list' %}" class="back-link">Назад</a>
 </div>
-{% endblock %}

@@ -423,11 +423,8 @@ class EditAnnouncementView(LoginRequiredMixin, UpdateView):
             context['photo_form'] = AnnouncementPhotoEditForm()
         context['photos'] = self.object.images.all()
 
-        form = self.get_form()  # Отримуємо форму
-        if form.errors:
-            context['video_url'] = None  # Якщо є помилки, очищаємо video_url
-        else:
-            context['video_url'] = self.object.video_url
+        context['video_url'] = self.object.video_url
+        context['video_file'] = self.object.video_file
            
 
         return context
@@ -811,12 +808,11 @@ class UserProfileView(LoginRequiredMixin, View):
             user.first_name = request.POST.get('first_name', user.first_name)
             user.last_name = request.POST.get('last_name', user.last_name)
             user.email = request.POST.get('email', user.email)
-            user.save()
-
-            return JsonResponse({
-                'success': True,
-                'message': 'User information updated successfully'
-            }, status=200)
+            try:
+                user.save()
+                return JsonResponse({'success': True, 'message': 'Profile updated successfully'})
+            except Exception as e:
+                return JsonResponse({'success': False, 'message': f'Error saving profile: {str(e)}'})
         elif request.is_ajax() and request.method == "POST":
             try:
                 data = json.loads(request.body.decode('utf-8'))

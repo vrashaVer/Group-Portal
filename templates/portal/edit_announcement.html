@@ -1,3 +1,8 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'edit_annon.css' %}">
+
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
@@ -17,7 +22,14 @@
     </div>
 
     <h3>Existing Video:</h3>
-    {% if video_url %}
+    {% if announcement.video_file %}
+        <video width="320" height="240" controls>
+            <source src="{{ announcement.video_file.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <button type="button" onclick="deleteVideo()">Delete</button>
+        <input type="hidden" name="delete_video" id="delete_video_input" value="">
+    {% elif video_url %}
         <p>Video URL: <a href="{{ video_url }}" target="_blank">{{ video_url }}</a></p>
         <input type="hidden" name="delete_video" id="delete_video_input" value="">
         <button type="button" class="delete-photo-btn" data-id="{{ photo.id }}">Delete</button>

@@ -1,0 +1,77 @@
+
+.sidebar-div{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar {
+    padding-top: 20px;
+    width: 230px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+   
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+
+
+.info-board {
+    margin: 30px auto; /* Відступи зверху та знизу, центроване вирівнювання */
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    max-width: 800px; /* Максимальна ширина контенту */
+    width: 90%; /* Ширина контейнера адаптується до ширини екрану */
+}
+
+/* Заголовок події */
+.info-board h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center; /* Центрування заголовка */
+}
+
+/* Опис події */
+.info-board p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #555;
+    text-align: justify; /* Вирівнювання тексту по ширині */
+}
+
+/* Дата події */
+.info-board p:last-child {
+    margin-top: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #333;
+    text-align: center; /* Центрування дати */
+}
