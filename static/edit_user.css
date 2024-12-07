@@ -1,0 +1,88 @@
+/* Загальний стиль для сторінки */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Контейнер для форми */
+form {
+    max-width: 600px;
+    margin: 40px auto;
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стиль для заголовка */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Стиль для лейблів і полів введення */
+label {
+    font-weight: bold;
+    margin-top: 15px;
+    display: block;
+}
+
+input[type="text"], input[type="email"], input[type="password"], select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus {
+    border-color: #5b9bd5;
+    outline: none;
+}
+
+/* Кнопка збереження */
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: block; /* Це дозволяє застосувати центрування */
+    margin: 20px auto; /* Центрує кнопку */
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Стиль для помилок */
+.error-messages {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+}
+
+.error-messages li {
+    margin: 5px 0;
+}
+
+/* Кнопка назад */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-bottom:  20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

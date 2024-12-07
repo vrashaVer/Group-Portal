@@ -31,7 +31,6 @@
         <a href="{% url 'add_forum_post' category_id %}" class="add-forum-post-btn">Додати новий пост</a>
     {% endif %}
 
-    <h1>Пости</h1>
     {% if forum_posts %}
             {% for post in forum_posts %}
                 <div class="forum-post">

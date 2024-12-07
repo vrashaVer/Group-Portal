@@ -5,7 +5,7 @@
 {% load has_permission %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'test.css' %}">
+<link rel="stylesheet" href="{% static 'user_list.css' %}">
 
 
 <aside class="sidebar" style="margin: 0;">
@@ -22,9 +22,9 @@
 
 <div class="container">
     {% if request.user|has_permission:user %}
-    <a href="{% url 'register_user'%}">Зареєструвати користувача</a>
-    <a href="{% url 'users_data_list'%}">Дані користувачів</a>
+    <a href="{% url 'register_user'%}" class="add-user-btn">Зареєструвати користувача</a>
     {%endif%}
+
     <h1>Користувачі</h1>
 
     <div>
@@ -44,20 +44,33 @@
             {% for user in admins %}
                 <li>
                     <a href="{% url 'an_user_profile' user.id %}">{{ user.username }}</a>
-                    {% if  request.user.profile_type.user_type %}
-                        {% if request.user.profile_type.user_type == 'teacher' %}
+                    {% if user.profile_type %}
+                        {% if user.profile_type.user_type == 'teacher' %}
                             - Вчитель
                         {% else %}
-                            -Учень
+                            - Учень
                         {% endif %}
                     {% endif %}
-                    {% if user != request.user and request.user.is_superuser %}
-                        <form method="post" action="{% url 'user_list' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <input type="hidden" name="role" value="Admin">
-                            <button type="submit" name="action" value="remove_role">Зняти адміністраторські права</button>
-                        </form>
+                    {% if user != request.user %}
+                        {% if user != request.user and request.user.is_superuser %}
+                            <form method="post" action="{% url 'user_list' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="hidden" name="role" value="Admin">
+                                <button type="submit" name="action" value="remove_role">Зняти адміністраторські права</button>
+                            </form>
+                            <form method="post" action="{% url 'user_edit' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Редагувати</button>
+                            </form>
+
+                        {% endif %} 
+                        {%if  user != request.user and request.user.is_superuser %}   
+                            <form method="post" action="{% url 'delete_user' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Ви впевнені, що хочете видалити цього користувача?');">Видалити</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 </li>
             {% endfor %}
@@ -70,14 +83,33 @@
         <ul>
             {% for user in moderators %}
                 <li>
-                    {{ user.username }}
-                    {% if request.user|has_permission:user %}
-                        <form method="post" action="{% url 'user_list' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                            <input type="hidden" name="role" value="Moderator">
-                            <button type="submit" name="action" value="remove_role">Зняти модераторські права</button>
-                        </form>
+                    <a href="{% url 'an_user_profile' user.id %}">{{ user.username }}</a>
+                    {% if user.profile_type %}
+                        {% if user.profile_type.user_type == 'teacher' %}
+                            - Вчитель
+                        {% else %}
+                            - Учень
+                        {% endif %}
+                    {% endif %}
+                    {% if user != request.user %}
+                        {% if request.user|has_permission:user %}
+                            <form method="post" action="{% url 'user_list' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="hidden" name="role" value="Moderator">
+                                <button type="submit" name="action" value="remove_role">Зняти модераторські права</button>
+                            </form>
+                            <form method="post" action="{% url 'user_edit' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Редагувати</button>
+                            </form>
+                        {% endif %} 
+                        {%if  user != request.user and request.user.is_superuser %}   
+                            <form method="post" action="{% url 'delete_user' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Ви впевнені, що хочете видалити цього користувача?');">Видалити</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 </li>
             {% endfor %}
@@ -90,7 +122,14 @@
         <ul>
             {% for user in users %}
                 <li>
-                    {{ user.username }}
+                    <a href="{% url 'an_user_profile' user.id %}">{{ user.username }}</a>
+                    {% if user.profile_type %}
+                        {% if user.profile_type.user_type == 'teacher' %}
+                            - Вчитель
+                        {% else %}
+                            - Учень
+                        {% endif %}
+                    {% endif %}
                     {% if user != request.user %}
                         {% if request.user|has_permission:user %}
                         <form method="post" action="{% url 'user_list' %}">
@@ -105,6 +144,16 @@
                             </select>
                             <button type="submit" name="action" value="add_role">Призначити роль</button>
                         </form>
+                        <form method="post" action="{% url 'user_edit' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Редагувати</button>
+                        </form>
+                        {% endif %} 
+                        {%if  user != request.user and request.user.is_superuser %}   
+                            <form method="post" action="{% url 'delete_user' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Ви впевнені, що хочете видалити цього користувача?');">Видалити</button>
+                            </form>
                         {% endif %}
                     {% endif %}
                 </li>

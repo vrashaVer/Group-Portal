@@ -1,14 +1,28 @@
-{% extends "base.html" %}
 
-{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'edit_user.css' %}">
+
 <h1>Редагувати користувача: {{ user.username }}</h1>
 <form method="post">
     {% csrf_token %}
+    
     <label for="username">Ім'я користувача:</label>
     <input type="text" id="username" name="username" value="{{ user.username }}" required>
 
     <label for="email">Електронна пошта:</label>
-    <input type="email" id="email" name="email" value="{{ user.email }}" >
+    <input type="email" id="email" name="email" value="{{ user.email }}">
+
+    <label for="first_name">Ім'я:</label>
+    <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
+
+    <label for="last_name">Прізвище:</label>
+    <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+
+    <label for="user_type">Тип користувача:</label>
+    <select id="user_type" name="user_type">
+        <option value="student" {% if profile_type.user_type == 'student' %}selected{% endif %}>Студент</option>
+        <option value="teacher" {% if profile_type.user_type == 'teacher' %}selected{% endif %}>Вчитель</option>
+    </select>
 
     <label for="password">Новий пароль (якщо потрібно змінити):</label>
     <input type="password" id="password" name="password">
@@ -23,4 +37,5 @@
 
     <button type="submit">Зберегти</button>
 </form>
-{% endblock %}
+<a href="{% url 'user_list' %}" class="back-link">Назад до списку користувачів</a>
+
