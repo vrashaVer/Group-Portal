@@ -36,7 +36,6 @@ urlpatterns = [
     path('profile/', views.UserProfileView.as_view(), name='user_profile'),
     path('user/<int:pk>/', views.AnUserProfileView.as_view(), name='an_user_profile'),
     path('register-user/', views.UserRegistrationView.as_view(), name='register_user'),
-    path('user-list/', views.UserDataListView.as_view(), name='users_data_list'),
     path('user-edit/<int:pk>/', views.UserEditView.as_view(), name='user_edit'),
     path('delete-photo/<int:photo_id>/', views.DeleteAnnouncementPhotoView.as_view(), name='delete_photo'),
     path('add-event/', views.AddEventView.as_view(), name='add_event'),
@@ -50,6 +49,8 @@ urlpatterns = [
     path('diary/subjects/<int:pk>/grades/', views.SubjectGradesView.as_view(), name='subject_grades'),
     path('diary/subjects/<int:pk>/edit-grades/', views.EditGradesView.as_view(), name='edit_grades'),
     path('edit-assignments/<int:subject_id>/', views.EditAssignmentsView.as_view(), name='edit_assignments'),
+    path('user/<int:pk>/delete/', views.UserDeleteView.as_view(), name='delete_user'),
+
     ]
 
 if settings.DEBUG:

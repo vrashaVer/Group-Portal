@@ -196,6 +196,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease; /* Анімація */
     margin-bottom: 20px;
+    
    
 }
 

@@ -1,0 +1,123 @@
+/* Загальний стиль для сторінки профілю */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Контейнер для інформації профілю */
+.profile-info-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 2px solid #ddd;  /* Додаємо межу */
+    border-radius: 10px;  /* Округляємо кути */
+    background-color: #fff;  /* Задаємо фон для контейнера */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тінь для більшої видимості */
+}
+
+/* Секція з фото */
+.profile-photo-section {
+    flex: 1 1 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+/* Контейнер для фото профілю */
+.photo-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-photo-fr {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.default-avatar {
+    font-size: 50px;
+    color: white;
+    background-color: #4CAF50;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+/* Секція з особистою інформацією */
+.personal-info-section {
+    flex: 2 1 600px;
+    margin: 20px;
+}
+
+/* Заголовок розділу */
+.personal-info-section h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Рядки з інформацією */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+/* Стилі для етикеток та значень */
+.info-row p {
+    font-size: 16px;
+    color: #555;
+    width: 45%;
+}
+
+/* Прямокутники для значень */
+.info-row p strong {
+    font-weight: bold;
+    color: #333;
+}
+
+.info-row p span {
+    padding: 8px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    display: inline-block;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #0b0b0b;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+

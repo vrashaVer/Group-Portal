@@ -1,18 +1,38 @@
-<h1>Профіль користувача</h1>
-    <div>
-        <h2>{{ user_profile.username }}</h2>
-        <p><strong>Ім'я:</strong> {{ user_profile.first_name }}</p>
-        <p><strong>Прізвище:</strong> {{ user_profile.last_name }}</p>
-        <p><strong>Email:</strong> {{ user_profile.email }}</p>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'an_user_profile.css' %}">
+
+
+<h1>Профіль користувача {{ user_profile.username }}</h1>
+
+<div class="profile-info-container">
+    <div class="profile-photo-section">
+        <div class="photo-container">
+            {% if user_profile.profilephoto and user_profile.profilephoto.photo %}
+                <img src="{{ user_profile.profilephoto.photo.url }}?{{ user_profile.profilephoto.updated_at }}" alt="Profile Photo" class="profile-photo-fr">
+            {% else %}
+                <div class="default-avatar">
+                    {% if user_profile.first_name and user_profile.last_name %}
+                        {{ user_profile.first_name|slice:":1" }}{{ user_profile.last_name|slice:":1" }} <!-- Ініціали -->
+                    {% else %}
+                        {{ user_profile.username|slice:":1" }} <!-- Перша літера логіна -->
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 
-    <div>
-        <h3>Тип профілю</h3>
-        {% if profile_type %}
-            <p>{{ profile_type.get_user_type_display }}</p>
-        {% else %}
-            <p>Тип профілю не визначено</p>
-        {% endif %}
+    <div class="personal-info-section">
+        <h2>Особиста інформація</h2>
+        <div class="info-row">
+            <p><strong>Ім'я:</strong> <span>{{ user_profile.first_name|default:"-" }}</span></p>
+            <p><strong>Прізвище:</strong> <span>{{ user_profile.last_name|default:"-" }}</span></p>
+        </div>
+        <div class="info-row">
+            <p><strong>Email:</strong> <span>{{ user_profile.email }}</span></p>
+            <p><strong>Логін:</strong> <span>{{ user_profile.username }}</span></p>
+        </div>
     </div>
+</div>
 
-    <a href="{% url 'user_list' %}">Повернутися до списку користувачів</a>
+<a href="{% url 'user_list' %}" class="back-link">&#8592; Назад </a>
