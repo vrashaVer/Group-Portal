@@ -1,0 +1,100 @@
+/* Загальні налаштування */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9; /* Світлий фон */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Контейнер для форми */
+.info-board {
+    background-color: #ffffff; /* Білий фон */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+/* Заголовок форми */
+h1 {
+    text-align: center;
+    font-size: 1.8em;
+    color: #333; /* Чорний колір */
+    margin-bottom: 20px;
+}
+
+/* Стилі для лейблів та полів вводу */
+label {
+    font-size: 1.1em;
+    color: #555; /* Сірий колір */
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Поля вводу та текстові області */
+input[type="text"], input[type="date"], textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc; /* Світло-сірий бордер */
+    border-radius: 5px;
+    font-size: 1em;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
+    border-color: #333; /* Чорний бордер при фокусі */
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Кнопка збереження */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #333; /* Чорний фон */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555; /* Темно-сірий колір при наведенні */
+}
+
+/* Посилання "Назад" */
+.back-link {
+    display: block; /* Перетворюємо на блочний елемент для центрованого вирівнювання */
+    text-align: center; /* Центруємо текст */
+    margin-top: 20px;
+    text-decoration: none;
+    font-size: 1.1em;
+    color: #333; /* Чорний колір */
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: #555; /* Світло-сірий колір при наведенні */
+}
+
+/* Відступи між елементами форми */
+p {
+    margin-bottom: 20px;
+}
+
+/* Підказки для форми */
+textarea {
+    height: 150px;
+    resize: vertical;
+}

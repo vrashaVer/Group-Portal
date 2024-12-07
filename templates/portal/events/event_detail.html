@@ -2,8 +2,10 @@
 
 {% load static %}
 
+
 {% block content %}
-<link rel="stylesheet" href="{% static 'events.css' %}">
+<link rel="stylesheet" href="{% static 'event_detail.css' %}">
+
 <aside class="sidebar" style="margin: 0;">
     <div class="sidebar-div">
         <nav class="sidebar-nav">
@@ -16,8 +18,8 @@
 
 </aside>
 <div class = "info-board">
-    <h1>{{event.title}}</h1>
+    <h3>{{event.title}} - {{event.date}}</h3>
     <p>{{event.content|linebreaksbr}}</p>
-    <p>{{event.date}}</p>
+
 </div>
 {% endblock %}
