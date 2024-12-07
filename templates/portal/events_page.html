@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load has_permission %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'events.css' %}">
@@ -22,12 +23,14 @@
         <form id="search-form" method="get" action="{% url 'event_list'%}">
             <input type="text" name="search" id="search-input" placeholder="Пошук подій на рік..." class="search-bar" value="{{ search }}" oninput="submitSearch()">
         </form>
-        <div class="admin-menu">
-            <button class="admin-menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
-            <div class="admin-dropdown-menu">
-                <a href="{% url 'add_event'%}">Додати подію</a>
+        {% if request.user|has_permission:user %}
+            <div class="admin-menu">
+                <button class="admin-menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                <div class="admin-dropdown-menu">
+                    <a href="{% url 'add_event'%}">Додати подію</a>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
     <div class="list-elements">
         {% for month_year, events_in_month in grouped_events %}
@@ -35,16 +38,18 @@
             <hr>
             {% for event in events_in_month %}
                 <div class="event">
-                    <div class="edit-menu">
-                        <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
-                        <div class="dropdown-menu">
-                            <a href="{% url 'edit_event' event.id %}">Змінити подію</a>
-                            <form method="post" action="{% url 'delete_event' event.id %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="delete-btn">Видалити подію</button>
-                            </form>
+                    {% if request.user|has_permission:user %}
+                        <div class="edit-menu">
+                            <button class="menu-btn">&#x22EE;</button>  <!-- Кнопка з трьома точками -->
+                            <div class="dropdown-menu">
+                                <a href="{% url 'edit_event' event.id %}">Редагувати</a>
+                                <form method="post" action="{% url 'delete_event' event.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn">Видалити</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
                     <a href="{% url 'event_detail' event.id%}" class="link-text">
                     <div class="event-text">{{ event.date|date:"d F" }} - <h2 class="event-title">{{ event.title|truncatechars:20 }}</h2></div>
                     </a>
