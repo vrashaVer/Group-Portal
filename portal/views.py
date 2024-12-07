@@ -8,7 +8,7 @@ from .models import Announcement, Poll,Vote,Choice,Like,Comment, PhotoPost, Phot
 from .models import ProfileColor, ProfilePhoto, Subject,Assignment,Grade
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
-from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,ProfilePhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm, AssignmentForm,GradeForm, SubjectForm
+from .forms import CommentForm, PostForm, PhotoPostEditForm, AnnouncementForm,ProfilePhotoForm, ForumCategoryForm, UserRegistrationForm,AnnouncementPhotoEditForm,ChoiceFormSet, PollForm, AssignmentForm,UserEditForm, SubjectForm
 from django.utils import timezone
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
@@ -930,67 +930,6 @@ class UserRegistrationView(LoginRequiredMixin,View):
             user.is_superuser or
             UserRole.objects.filter(user=user, role__name="Admin").exists()
         )
-        
-class UserDataListView(LoginRequiredMixin,View):
-    template_name = 'portal/users/user_data_list.html'
-
-    def get(self, request):
-        # Перевірка прав доступу
-        if not self._has_permission(request.user):
-            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
-        
-        users = User.objects.all()
-        return render(request, self.template_name, {'users': users})
-
-    def _has_permission(self, user):
-        # Тільки власник або адміністратори мають доступ
-        return (
-            user.is_superuser or 
-            UserRole.objects.filter(user=user, role__name="Admin").exists()
-        )
-
-
-class UserEditView(LoginRequiredMixin,View):
-    template_name = 'portal/users/user_edit.html'
-
-    def get(self, request, pk):
-        # Перевірка прав доступу
-        if not self._has_permission(request.user):
-            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
-        
-        user = get_object_or_404(User, pk=pk)
-        return render(request, self.template_name, {'user': user})
-
-    def post(self, request, pk):
-        if not self._has_permission(request.user):
-            return HttpResponseForbidden("Ви не маєте доступу до цієї сторінки.")
-        
-        user = get_object_or_404(User, pk=pk)
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        user.username = username
-        user.email = email
-        if password:
-            try:
-                # Перевірка пароля за правилами Django
-                validate_password(password, user=user)
-                user.set_password(password)
-            except ValidationError as e:
-                # Повернення помилки, якщо пароль не відповідає правилам
-                return render(request, self.template_name, {
-                    'user': user,
-                    'error_messages': e.messages,
-                })
-
-        return redirect('user_list')
-
-    def _has_permission(self, user):
-        return (
-            user.is_superuser or 
-            UserRole.objects.filter(user=user, role__name="Admin").exists()
-        )
     
 class EventListView(LoginRequiredMixin,ListView):
     model = Event
@@ -1147,3 +1086,59 @@ class EditAssignmentsView(View):
         assignment.save()
 
         return JsonResponse({'success': True, 'new_title': assignment.title})
+    
+
+
+class UserDeleteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        # Отримуємо користувача
+        user = get_object_or_404(User, pk=pk)
+
+        # Перевірка, чи користувач є адміністратором
+        if user.is_superuser:
+            return HttpResponseForbidden("Неможливо видалити адміністратора.")
+
+        # Видалення користувача
+        user.delete()
+
+        # Перенаправлення на список користувачів після видалення
+        return redirect('user_list')
+    
+class UserEditView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserEditForm
+    template_name = 'portal/users/user_edit.html'
+
+    def get_object(self, queryset=None):
+        user = get_object_or_404(User, pk=self.kwargs['pk'])
+
+        # Перевірка, чи користувач може редагувати цього користувача
+        if user != self.request.user and not self.request.user.is_superuser:
+            return HttpResponseForbidden("Ви не маєте прав для редагування цього користувача.")
+        
+        return user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.object
+
+        # Отримуємо або створюємо ProfileType для користувача
+        profile_type = ProfileType.objects.filter(user=user).first()
+        if not profile_type:
+            profile_type = ProfileType.objects.create(user=user, user_type='student')
+
+        context['profile_type'] = profile_type
+        return context
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+
+        # Оновлюємо тип користувача
+        user_type = self.request.POST.get('user_type')
+        if user_type:
+            profile_type, created = ProfileType.objects.get_or_create(user=user)
+            profile_type.user_type = user_type
+            profile_type.save()
+
+        user.save()
+        return redirect(reverse_lazy('user_list'))

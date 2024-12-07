@@ -2,6 +2,8 @@ from django import forms
 from .models import Comment,PhotoPost, Announcement, AnnouncementPhoto, ForumPost, ForumCategory, Role, ProfileType, UserRole, Poll, Choice, ProfilePhoto, Assignment, Grade, Subject
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -81,7 +83,11 @@ class ForumCategoryForm(forms.ModelForm):
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Підтвердити пароль")
-    role = forms.ModelChoiceField(queryset=Role.objects.all(), label="Роль", required=False)
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.exclude(name='Owner'),  # виключаємо роль 'Owner'
+        label="Роль",
+        required=False
+    )
     user_type = forms.ChoiceField(choices=ProfileType.USER_TYPE_CHOICES, label="Тип користувача", required=True)
 
     class Meta:
@@ -141,3 +147,40 @@ class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subject
         fields = ['name', 'teacher'] 
+
+class UserEditForm(forms.ModelForm):
+    password = forms.CharField(
+        label="Новий пароль",
+        widget=forms.PasswordInput(),
+        required=False,
+        help_text="Пароль має відповідати стандартам безпеки Django."
+    )
+
+    # Додаємо поле для типу користувача (student/teacher)
+    user_type = forms.ChoiceField(
+        choices=ProfileType.USER_TYPE_CHOICES,
+        label="Тип користувача",
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']  # Додаємо first_name та last_name
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.exclude(id=self.instance.id).filter(username=username).exists():
+            raise forms.ValidationError("Цей нікнейм вже використовується.")
+        return username
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if password:
+            from django.contrib.auth.password_validation import validate_password
+            try:
+                validate_password(password, user=self.instance)
+            except forms.ValidationError as e:
+                raise forms.ValidationError(f"Пароль не відповідає стандартам: {', '.join(e.messages)}")
+        return password
+    
+

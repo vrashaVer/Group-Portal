@@ -1,0 +1,148 @@
+/* Sidebar */
+.sidebar-div{
+    width: 90%; /* Трохи менше, ніж ширина sidebar для естетики */
+    padding-left: 10px;
+    padding-top: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-top: 20px; /* Відступ зверху для секції */
+    margin-bottom: 20px; /* Відступ знизу для секції */
+    max-height: 200px;
+    box-sizing: border-box; /* Щоб padding не впливав на ширину */
+
+}
+.sidebar {
+    padding-top: 20px;
+    width: 230px;
+    height: 100%; /* Займає всю висоту контейнера */
+    box-sizing: border-box; /* Включає відступи в загальний розрахунок */
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+
+}
+
+.sidebar-nav a {
+    display: block;
+    width: 160px;
+    padding: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: 2px solid rgb(103, 119, 152);
+    background-color: rgb(117, 135, 171);
+   
+}
+
+.sidebar-nav a:hover {
+    background-color: rgb(100, 116, 147);
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+div > h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+/* Styling individual user items */
+li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between; /* Align name and buttons on opposite sides */
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+li a {
+    font-size: 1.2em;
+    color: #333;
+    text-decoration: none;
+    flex-grow: 1;  /* Allow the name to take up the remaining space */
+}
+
+li a:hover {
+    color: #007bff;
+}
+
+/* Action buttons styling */
+form {
+    margin-left: 10px; /* Add some space between name and buttons */
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 2px; /* Small space between buttons */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* Ensure buttons are aligned in a row to the right */
+form button {
+    display: inline-block;
+}
+
+.add-user-btn {
+    display: inline-block;
+    background-color: #333; /* Темно-сірий колір */
+    color: #fff; /* Білий текст */
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px; /* Згладжені кути */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Анімація */
+    margin-bottom: 20px;
+   
+}
+
+.add-user-btn:hover {
+    background-color: #000; /* Чорний колір при наведенні */
+    transform: scale(1.05); /* Збільшення при наведенні */
+}
+
+.add-user-btn:active {
+    transform: scale(0.95); /* Легке зменшення при кліку */
+}

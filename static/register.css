@@ -1,0 +1,87 @@
+/* Основний контейнер */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Заголовки */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Стилизация форми */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Групи для полів форми */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стилизация полів введення */
+input, select {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Стилизация кнопок */
+.submit-btn {
+    background-color: #4b4b4b;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #202020;
+}
+
+.submit-btn:focus {
+    outline: none;
+}
+
+/* Виведення помилок */
+.error-messages {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    list-style-type: none;
+}
+
+.error-messages li {
+    margin: 5px 0;
+}
+
+/* Посилання */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
