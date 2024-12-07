@@ -1,0 +1,168 @@
+/* Загальні стилі для сторінки створення голосування */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Контейнер для форми */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Стилі для групи полів */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+/* Контейнер для варіантів голосування */
+#choice-forms {
+    margin-bottom: 20px;
+}
+
+/* Стиль для кожного варіанту голосування */
+.choice-form {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.remove-choice {
+    background-color: #ff4c4c;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+.remove-choice:hover {
+    background-color: #e60000;
+}
+
+/* Кнопка для додавання варіанту */
+#add-choice {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+    transition: background-color 0.3s;
+}
+
+#add-choice:hover {
+    background-color: #45a049;
+}
+
+/* Кнопка для створення голосування */
+.btn-submit {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #45a049;
+}
+
+/* Кнопка для повернення на головну */
+.btn-back {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.btn-back:hover {
+    text-decoration: underline;
+}
+
+/* Стилі для виведення помилок */
+.error-messages {
+    background-color: #ffdddd;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.error-messages ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.error-messages li {
+    font-size: 14px;
+}
+
+.text-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.text-field:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Для уніфікації всієї групи форми */
+.form-group {
+    margin-bottom: 20px;
+}

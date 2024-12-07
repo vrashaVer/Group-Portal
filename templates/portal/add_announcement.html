@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'add_announ.css' %}">
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
@@ -33,6 +37,9 @@
     </div>
 
     
-    <button type="submit">Create Announcement</button>
-    <a href="{% url 'main'%}">Go back</a>
+    <div class="form-actions">
+        <button type="submit" class="btn-submit">Create Announcement</button>
+    </div>
+
+    <a href="{% url 'main' %}" class="btn-back">Go back</a>
 </form>

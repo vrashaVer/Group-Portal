@@ -81,6 +81,14 @@
                                 value="{{ user.email|default:'' }}" class="hidden">
                         </div>
                     </div>
+                    <div class="info-column">
+                        <p><strong>Username:</strong></p>
+                        <div class="info-box">
+                            <span class="info-text" id="username-text">{{ user.username }}</span>
+                            <input type="text" name="username" id="username-input" 
+                                value="{{ user.username }}" class="hidden">
+                        </div>
+                    </div>
                 </div>
                 <button type="button" id="edit-user-btn" class="action-btn">Edit</button>
                 <button type="submit" id="save-user-btn" class="action-btn hidden">Save</button>

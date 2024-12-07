@@ -57,31 +57,31 @@
                     </div>
                     <h2>{{ item.title }}</h2>
                     <p>{{ item.content }}</p>
-
-                    {% if item.video_file %}
-                        <video width="320" height="240" controls>
-                            <source src="{{ item.video_file.url }}" type="video/mp4">
-                        </video>
-                    {% elif item.video_url %}
-                        {% if 'youtube.com' in item.video_url or 'youtu.be' in item.video_url %}
-                            {% with item.video_url|extract_video_id as video_id %}
-                                {% if video_id %}
-                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" 
-                                            frameborder="0" allowfullscreen></iframe>
-                                {% else %}
-                                    <p>Invalid YouTube URL</p>
-                                {% endif %}
-                            {% endwith %}
+                    <div class="media-content">
+                        {% if item.video_file %}
+                            <video width="320" height="240" controls>
+                                <source src="{{ item.video_file.url }}" type="video/mp4">
+                            </video>
+                        {% elif item.video_url %}
+                            {% if 'youtube.com' in item.video_url or 'youtu.be' in item.video_url %}
+                                {% with item.video_url|extract_video_id as video_id %}
+                                    {% if video_id %}
+                                        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" 
+                                                frameborder="0" allowfullscreen></iframe>
+                                    {% else %}
+                                        <p>Invalid YouTube URL</p>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                    {% for image in item.images.all %}
-                        {% if image %}
+                        {% for image in item.images.all %}
+                            {% if image %}
+                        
+                                <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
+                            {% endif %}
                     
-                            <img src="{{ image.image.url }}" alt="Image for {{ item.title }}">
-                        {% endif %}
-                   
-                    {% endfor %}
-
+                        {% endfor %}
+                    </div>
                     
                     <div class="announcement-footer">
                         <div class="left-actions">
@@ -352,10 +352,26 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#comments-' + announcementId + ' .existing-comments').append(
-                            `<p><strong>${response.user}</strong> (${response.created_at}): ${response.text}</p>`
+                        // Знайдемо блок коментарів для цього оголошення
+                        const commentSection = $('#comments-' + announcementId + ' .existing-comments');
+                        
+                        // Додаємо новий коментар в кінець списку
+                        commentSection.append(
+                            `<div class="comment owner-comment">
+                                <div class="comment-header">
+                                    <strong>${response.user}</strong>
+                                </div>
+                                <div class="comment-text">
+                                    ${response.text}
+                                </div>
+                                <div class="comment-time">
+                                    ${response.created_at}
+                                </div>
+                            </div>`
                         );
-                        form.find('textarea[name="text"]').val(''); // Очистити текстове поле
+
+                        // Очистити текстове поле після додавання коментаря
+                        form.find('textarea[name="text"]').val('');
                     } else {
                         alert("Не вдалося додати коментар.");
                     }
@@ -366,6 +382,7 @@
                 }
             });
         });
+
         function submitSearch() {
             const input = document.getElementById('search-input');
             const form = document.getElementById('search-form');
