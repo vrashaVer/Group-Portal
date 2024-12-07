@@ -8,29 +8,30 @@
     <link rel="stylesheet" href="{% static 'login.css' %}">  <!-- Підключіть свій CSS файл -->
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ form.username.label }}  <!-- Лейбл для поля користувача -->
-                {{ form.username }}  <!-- Поле вводу для імені користувача -->
-                {% for error in form.username.errors %}
-                    <div class="error-message">{{ error }}</div>  <!-- Відображення помилок -->
-                {% endfor %}
-            </div>
+    <div class="login-page">
+        <h1 class="main-title">Group-Portal</h1>
+        <div class="login-container">
+            <h2 class="form-title">Login</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username" class="form-label">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="id_password" class="form-label">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
 
-            <div class="form-group">
-                {{ form.password.label }}  <!-- Лейбл для поля пароля -->
-                {{ form.password }}  <!-- Поле вводу для пароля -->
-                {% for error in form.password.errors %}
-                    <div class="error-message">{{ error }}</div>  <!-- Відображення помилок -->
-                {% endfor %}
-            </div>
-
-            <button type="submit" class="btn">Login</button>
-        </form>
-
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

@@ -1,6 +1,23 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'add_poll.css' %}">
+
 <form method="post">
     {% csrf_token %}
-    {{ poll_form.as_p }}
+    <div class="form-group">
+        <label for="id_question">Question:</label>
+        {{ poll_form.question }}
+        {% if poll_form.question.errors %}
+            <div class="error-messages">
+                <ul>
+                    {% for error in poll_form.question.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
 
     <div id="choice-forms">
         {{ choice_formset.management_form }}
@@ -13,14 +30,18 @@
     </div>
 
     <button type="button" id="add-choice" onclick="addChoice()">Додати варіант</button>
-    <button type="submit">Create Poll</button>
+    <button type="submit"class="btn-submit">Create Poll</button>
 
     {% if choice_formset.non_form_errors %}
-        <div class="error">
-            {{ choice_formset.non_form_errors }}
+        <div class="error-messages">
+            <ul>
+                {% for error in choice_formset.non_form_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
         </div>
     {% endif %}
-    <a href="{% url 'main'%}">Go back</a>
+    <a href="{% url 'main'%}" class="btn-back">Go back</a>
 </form>
 
 <script>
@@ -60,10 +81,12 @@
 
     function choiceFormTemplate(index) {
         return `
-            <label for="id_choices-${index}-choice_text">Choice text:</label>
-            <input type="text" name="choices-${index}-choice_text" maxlength="100" id="id_choices-${index}-choice_text">
-            <input type="hidden" name="choices-${index}-id" id="id_choices-${index}-id">
-            <input type="hidden" name="choices-${index}-poll" id="id_choices-${index}-poll">
+            <div class="form-group">
+                <label for="id_choices-${index}-choice_text">Choice text:</label>
+                <input type="text" name="choices-${index}-choice_text" maxlength="100" id="id_choices-${index}-choice_text" class="text-field">
+                <input type="hidden" name="choices-${index}-id" id="id_choices-${index}-id">
+                <input type="hidden" name="choices-${index}-poll" id="id_choices-${index}-poll">
+            </div>
         `;
     }
 </script>
