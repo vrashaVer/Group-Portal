@@ -55,10 +55,20 @@
 .poll{
     margin-bottom: 40px;
     padding: 20px;
+    padding-left: 20px;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.poll-header {
+    position: relative; /* Встановлюємо відносне позиціювання для батьківського контейнера */
+    padding: 10px;
+    display: flex;
+    justify-content: space-between; /* Забезпечує простір між текстом і меню */
+    align-items: center;
 }
 
 .search-container {
@@ -128,37 +138,44 @@
 }
 
 .poll-menu {
+    margin-top: -20px;
     position: relative;
+    display: inline-block;
 }
 
 .menu-btn-poll {
-    font-size: 20px;
-    cursor: pointer;
     background: none;
     border: none;
+    font-size: 1.5rem; /* Розмір кнопки */
+    cursor: pointer;
+    padding: 5px;
 }
 
 .dropdown-menu-poll {
     display: none; /* Приховане за замовчуванням */
     position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: white;
-    border: 1px solid #ddd;
+    right: 0;
+    top: 100%; /* Випадає нижче кнопки */
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
     z-index: 10;
+    width: max-content;
+    padding: 5px 0;
 }
 
 .dropdown-menu-poll a, .dropdown-menu-poll .delete-btn {
     display: block;
-    padding: 8px 12px;
-    color: black;
     text-decoration: none;
-    background-color: white;
-    border-bottom: 1px solid #ddd;
+    color: #333;
+    padding: 8px 16px;
+    font-size: 0.9rem;
 }
 
 .dropdown-menu-poll a:hover, .dropdown-menu-poll .delete-btn:hover {
     background-color: #f0f0f0;
+    color: #000;
+    cursor: pointer;
 }
 
 .poll-menu.active .dropdown-menu-poll {
@@ -174,43 +191,56 @@
 
 .announcement-meta {
     flex: 1; /* Робить авторів тексту ліворуч */
+    display: flex; /* Включає Flexbox */
+    justify-content: space-between; /* Розташовує елементи з рівними проміжками */
+    align-items: center;
 }
 
 .author {
+    font-size: 1.2em;
     font-weight: bold;
+    margin-left: 10px;
 }
 
 .announcement-menu {
     position: relative;
+    display: inline-block;
+    margin-left: 10px;
 }
 
 .menu-btn-announcement {
-    font-size: 20px;
-    cursor: pointer;
-    background: transparent;
+    background: none;
     border: none;
+    font-size: 1.5rem; /* Розмір кнопки */
+    cursor: pointer;
+    padding: 5px;
 }
 
 .dropdown-menu-announcement {
     display: none; /* Приховане за замовчуванням */
     position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: white;
-    border: 1px solid #ddd;
+    right: 0;
+    top: 100%; /* Випадає нижче кнопки */
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
     z-index: 10;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    width: max-content;
+    padding: 5px 0;
 }
 
 .dropdown-menu-announcement a, .dropdown-menu-announcement .delete-btn {
     display: block;
-    padding: 8px 12px;
     text-decoration: none;
     color: #333;
+    padding: 8px 16px;
+    font-size: 0.9rem;
 }
 
 .dropdown-menu-announcement a:hover, .dropdown-menu-announcement .delete-btn:hover {
     background-color: #f0f0f0;
+    color: #000;
+    cursor: pointer;
 }
 
 .announcement-menu.active .dropdown-menu-announcement {
@@ -408,4 +438,33 @@
     max-height: 200px;  /* Встановлює максимальну висоту контейнера */
     overflow-y: auto;   /* Додає вертикальну прокрутку, якщо вміст виходить за межі */
     font-size: 15px;
+}
+
+.profile-photo {
+    margin-left: -10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Кругла форма аватарки */
+    object-fit: cover; /* Адаптація зображення */
+}
+
+.user-icon-profile {
+    margin-left: -10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.author-middle {
+    flex-grow: 1; /* Текст займає весь вільний простір */
+}
+
+.announcement {
+    position: relative; /* Контейнер має бути відносним для позиціювання */
 }

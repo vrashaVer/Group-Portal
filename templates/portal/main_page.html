@@ -42,7 +42,22 @@
                 <div class="announcement">
                     <div class="announcement-header">
                         <div class="announcement-meta">
-                            <p class="author">{{ item.creator }}</p>
+                            <div class="author-left">
+                                {% if item.creator.profile_photo and object.author.profile_photo.photo %}
+                                    <img src="{{ item.creator.profile_photo.photo.url }}?{{ item.creator.profile_photo.updated_at }}" alt="Author Photo" class="profile-photo">
+                                {% else %}
+                                    <div class="user-icon-profile" style="background-color: {{ item.creator.profile_color.color|default:'#cccccc' }};">
+                                        {% if item.creator.first_name and item.creator.last_name %}
+                                            {{ item.creator.first_name|slice:":1" }}{{ item.creator.last_name|slice:":1" }}
+                                        {% else %}
+                                            {{ item.creator.username|slice:":1" }}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="author-middle">
+                                <span class="author">{{ item.creator }}</span>
+                            </div>
                         </div>
                         <div class="announcement-menu">
                             <button class="menu-btn-announcement">&#x22EE;</button>  
